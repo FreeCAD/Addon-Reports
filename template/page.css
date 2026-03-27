@@ -1,0 +1,294 @@
+/*
+{#
+SPDX-License-Identifier: LGPL-2.1-or-later
+SPDX-FileCopyrightText: 2026 Frank David Martínez Muñoz <mnesarco>
+SPDX-FileNotice: Part of FreeCAD.
+#}
+*/
+
+/* ── base ─────────────────────────────────────────────────────────────── */
+html {
+    scroll-behavior: smooth;
+}
+
+:host, :root {
+    margin-left: 0 !important;
+}
+
+/* ── dashboard header ─────────────────────────────────────────────────── */
+.dashboard-header {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border-bottom: 3px solid var(--tblr-primary);
+}
+
+.dashboard-header .page-pretitle {
+    color: rgba(255, 255, 255, .5);
+    padding: 0.5em;
+}
+
+.dashboard-header .page-title
+{
+    color: #fff;
+}
+
+/* ── sortable table headers ───────────────────────────────────────────── */
+th[data-sort] {
+    cursor: pointer;
+    user-select: none;
+    transition: background .15s
+}
+
+th[data-sort]:hover {
+    background: rgba(0, 0, 0, .04)
+}
+
+.sort-icon {
+    font-size: .7em;
+    opacity: .3;
+    margin-left: 3px
+}
+
+.sort-icon::after {
+    content: '\2195'
+}
+
+th.sort-asc .sort-icon {
+    opacity: 1
+}
+
+th.sort-asc .sort-icon::after {
+    content: '\2191'
+}
+
+th.sort-desc .sort-icon {
+    opacity: 1
+}
+
+th.sort-desc .sort-icon::after {
+    content: '\2193'
+}
+
+/* ── addons table ─────────────────────────────────────────────────────── */
+.addons-table {
+    font-size: .85rem
+}
+
+.addons-table td,
+.addons-table th {
+    white-space: nowrap;
+    vertical-align: middle
+}
+
+.addons-table td {
+    padding-right: 1em;
+}
+
+.addon-name {
+    font-weight: 600;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
+.addon-name a {
+    text-decoration: none
+}
+
+.addon-name a:hover {
+    text-decoration: underline
+}
+
+/* ── file paths ───────────────────────────────────────────────────────── */
+.file-path {
+    font-size: .85em;
+    font-weight: 600;
+    color: var(--tblr-primary);
+    background: var(--tblr-bg-surface-secondary);
+    padding: .1em .4em;
+    border-radius: var(--tblr-border-radius-sm);
+}
+
+/* ── issue details/summary ────────────────────────────────────────────── */
+details.issue-group {
+    margin-bottom: .5rem;
+    border-radius: var(--tblr-border-radius);
+    overflow: hidden
+}
+
+details.issue-group summary {
+    padding: .5rem .75rem;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    border-radius: var(--tblr-border-radius);
+    transition: background .15s;
+}
+
+details.issue-group summary::-webkit-details-marker {
+    display: none
+}
+
+details.issue-group summary::before {
+    content: '\25B8';
+    display: inline-block;
+    margin-right: .5rem;
+    transition: transform .2s;
+    font-size: .85em;
+}
+
+details.issue-group[open] summary::before {
+    transform: rotate(90deg)
+}
+
+.issue-content {
+    padding: .75rem 1rem .5rem;
+    margin-left: .75rem;
+    border-left: 3px solid var(--tblr-border-color)
+}
+
+.severity-high summary {
+    background: rgba(214, 57, 57, .07);
+    color: #d63939
+}
+
+.severity-high .issue-content {
+    border-left-color: #d63939
+}
+
+.severity-medium summary {
+    background: rgba(247, 103, 7, .07);
+    color: #f76707
+}
+
+.severity-medium .issue-content {
+    border-left-color: #f76707
+}
+
+.severity-low summary {
+    background: rgba(74, 149, 211, .07);
+    color: #4299e1
+}
+
+.severity-low .issue-content {
+    border-left-color: #4299e1
+}
+
+.severity-info summary {
+    background: rgba(47, 179, 68, .07);
+    color: #2fb344
+}
+
+.severity-info .issue-content {
+    border-left-color: #2fb344
+}
+
+.issue-file {
+    margin-bottom: .75rem
+}
+
+.issue-file ul {
+    margin: .25rem 0 0 1.25rem;
+    padding: 0;
+    font-size: .85rem;
+    color: var(--tblr-body-color)
+}
+
+.issue-file li {
+    margin-bottom: .2rem;
+    line-height: 1.4
+}
+
+/* ── dependencies ─────────────────────────────────────────────────────── */
+.dep-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .375rem
+}
+
+.dep-list .badge {
+    font-size: .75rem;
+    font-weight: 500
+}
+
+/* ── detail cards ─────────────────────────────────────────────────────── */
+.detail-card {
+    scroll-margin-top: 1rem;
+    transition: box-shadow .2s
+}
+
+.detail-card:target {
+    box-shadow: 0 0 0 3px var(--tblr-primary)
+}
+
+.detail-card.score-success {
+    border-left: 4px solid var(--tblr-success)
+}
+
+.detail-card.score-primary {
+    border-left: 4px solid var(--tblr-primary)
+}
+
+.detail-card.score-warning {
+    border-left: 4px solid var(--tblr-warning)
+}
+
+.detail-card.score-danger {
+    border-left: 4px solid var(--tblr-danger)
+}
+
+/* ── theme toggle ──────────────────────────────────────────────────────── */
+.theme-toggle {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, .25);
+    color: #fff;
+    border-radius: var(--tblr-border-radius);
+    padding: .35rem .6rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    font-size: .85rem;
+    transition: border-color .2s, background .2s;
+}
+
+.theme-toggle:hover {
+    border-color: rgba(255, 255, 255, .5);
+    background: rgba(255, 255, 255, .08)
+}
+
+.theme-toggle .ti {
+    font-size: 1.1rem
+}
+
+.theme-toggle .theme-label {
+    font-weight: 500
+}
+
+[data-bs-theme=dark] .theme-toggle {
+    border-color: rgba(255, 255, 255, .2)
+}
+
+/* ── print ────────────────────────────────────────────────────────────── */
+@media print {
+
+    .no-print,
+    .dashboard-header,
+    footer {
+        display: none !important
+    }
+
+    .detail-card .card-header {
+        position: static
+    }
+
+    details.issue-group {
+        break-inside: avoid
+    }
+
+    .detail-card {
+        break-inside: avoid-page
+    }
+}
+

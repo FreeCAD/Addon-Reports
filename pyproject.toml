@@ -1,0 +1,17 @@
+[project]
+name = "freecad-addon-analyzer"
+version = "0.1.0"
+description = "Static Addon Quality Analyzer"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "bandit>=1.8.6",
+    "httpx>=0.28.1",
+    "jinja2>=3.1.6",
+    "lxml>=6.0.1",
+    "pipreqs",
+    "typer>=0.24.1",
+]
+
+[tool.uv.sources]
+pipreqs = { git = "https://github.com/bndr/pipreqs.git" }

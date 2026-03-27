@@ -1,6 +1,18 @@
-# SPDX-License-Identifier: LGPL-2.1-or-later
-# SPDX-FileNotice: Part of the FreeCAD project.
-# SPDX-FileNotice: https://git-scm.com/docs/gitignore
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
 
-__pycache__
+# Virtual environments
 .venv
+
+.tmp
+repos/
+special/
+
+output/
+catalog/
+

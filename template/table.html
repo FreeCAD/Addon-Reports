@@ -1,0 +1,67 @@
+{#
+SPDX-License-Identifier: LGPL-2.1-or-later
+SPDX-FileCopyrightText: 2026 Frank David Martínez Muñoz <mnesarco>
+SPDX-FileNotice: Part of FreeCAD.
+#}
+
+{% macro head(lbl, dt, idx, align="end") %}
+<th data-sort="{{idx}}" data-type="{{dt}}" class="text-{{align}}">{{lbl}}<span class="sort-icon"></span></th>
+{% endmacro %}
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover table-striped table-sm table-vcenter addons-table" id="addons-table">
+            <thead>
+                <tr>
+                    {{ head("#", "number", 0, "start") }}
+                    {{ head("Addon", "string", 1, "start") }}
+                    {{ head("Score", "number", 2, "center") }}
+                    {{ head("High", "number", 3, "center") }}
+                    {{ head("Med", "number", 4, "center") }}
+                    {{ head("Low", "number", 5, "center") }}
+                    {{ head("Files", "number", 6, "center") }}
+                    {{ head("Git Ref", "string", 7, "start") }}
+                    {{ head("Branch", "string", 8, "start") }}
+                    {{ head("Version", "string", 9, "end") }}
+                    {{ head("Tag", "string", 10, "start") }}
+                    {{ head("Updated", "number", 11) }}
+                    {{ head('<i class="ti ti-download"></i> 1yr', "number", 12) }}
+                    {{ head('<i class="ti ti-download"></i> 1mo', "number", 13) }}
+                    {{ head('<i class="ti ti-star"></i>', "number", 14, "center") }}
+                    {{ head('<i class="ti ti-bug"></i>', "number", 15, "center") }}
+                    {{ head('<i class="ti ti-git-fork"></i>', "number", 16, "center") }}
+                    {{ head("License", "string", 17, "start") }}
+                </tr>
+            </thead>
+            <tbody>
+                {% for rpt in reports %}
+                {% set color = rpt.score|score_color %}
+                <tr data-addon-id="{{ rpt|rpt_id }}">
+                    <td data-value="{{ loop.index }}" class="text-center">{{ loop.index }}</td>
+                    <td class="addon-name text-start"><a href="#{{ rpt|rpt_id }}">{{ rpt.name }}</a>
+                        <span style="display: none;">{{ rpt.pkg_description | default("") }}</span>
+                        <span style="display: none;">{{ rpt.pkg_people }}</span>
+                    </td>
+                    <td data-value="{{ rpt.score }}" class="text-center"><span
+                            class="badge bg-{color} text-{color}-fg">{{ rpt.score|fmt_float }}</span></td>
+                    <td data-value="{{ rpt.high }}" class="text-center">{{ severity_badge(rpt.high, "danger") }}</td>
+                    <td data-value="{{ rpt.medium }}" class="text-center">{{ severity_badge(rpt.medium, "warning") }}</td>
+                    <td data-value="{{ rpt.low }}" class="text-center">{{ severity_badge(rpt.low, "info") }}</td>
+                    <td data-value="{{ rpt.files }}" class="text-center">{{ rpt.files|fmt_float }}</td>
+                    <td>{{ rpt.git_ref | default('-') }}</td>
+                    <td>{{ rpt.pkg_branch | default("-") }}</td>
+                    <td class="text-end">{{ rpt.pkg_version | default("-") }}</td>
+                    <td>{{ rpt.tag | default("-") }}</td>
+                    <td data-value="{{ rpt.updated }}" class="text-end">{{ rpt.updated|time_ago }}</td>
+                    <td data-value="{{ rpt.stats.downloads_365d }}" class="text-end">{{ rpt.stats.downloads_365d | fmt_float }}</td>
+                    <td data-value="{{ rpt.stats.downloads_30d }}" class="text-end">{{ rpt.stats.downloads_30d | fmt_float }}</td>
+                    <td data-value="{{ rpt.stats.stargazers }}" class="text-center">{{ rpt.stats.stargazers | fmt_float }}</td>
+                    <td data-value="{{ rpt.stats.open_issues }}" class="text-center">{{ rpt.stats.open_issues | fmt_float }}</td>
+                    <td data-value="{{ rpt.stats.total_forks }}" class="text-center">{{ rpt.stats.total_forks | fmt_float }}</td>
+                    <td>{{ ellipsis(rpt.pkg_license, 64) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

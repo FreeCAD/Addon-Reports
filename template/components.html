@@ -1,0 +1,19 @@
+{#
+SPDX-License-Identifier: LGPL-2.1-or-later
+SPDX-FileCopyrightText: 2026 Frank David Martínez Muñoz <mnesarco>
+SPDX-FileNotice: Part of FreeCAD.
+#}
+
+{% macro collapsible(title, count=-1, icon="list-check", color="secondary", class="issue-group") %}
+    <details class="{{ class }} bg-secondary-lt">
+        <summary>
+            <i class="ti ti-{{ icon }} me-2"></i>{{ title }}
+            {% if count >= 0 %}
+            <span class="badge bg-{{ color }} text-{{ color }}-fg ms-2">{{ count | fmt_float }}</span>
+            {% endif %}
+        </summary>
+        <div style="padding: 0.7em">
+            {{ caller() }}
+        </div>
+    </details>
+{% endmacro %}

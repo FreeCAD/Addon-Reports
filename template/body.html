@@ -1,0 +1,20 @@
+{#
+SPDX-License-Identifier: LGPL-2.1-or-later
+SPDX-FileCopyrightText: 2026 Frank David Martínez Muñoz <mnesarco>
+SPDX-FileNotice: Part of FreeCAD.
+#}
+
+<div class="page-body">
+    <div class="container-xl py-4">
+        {% include "global_stats.html" %}
+        {% include "searchbar.html" %}
+        {% include "table.html" %}
+        <div class="mt-4" id="addon-details">
+            <div class="d-flex align-items-center mb-3">
+                <h2 class="m-0"><i class="ti ti-list-details me-2"></i>Addon Details</h2>
+            </div>
+            {# body #}
+            {% include "details.html" %}
+        </div>
+    </div>
+</div>

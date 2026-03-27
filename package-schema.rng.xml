@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rng:grammar xmlns:rng="http://relaxng.org/ns/structure/1.0"
+  ns="https://wiki.freecad.org/Package_Metadata">
+
+  <rng:start>
+    <rng:element name="package">
+      <rng:group>
+        <rng:attribute name="format">
+          <rng:value>1</rng:value>
+        </rng:attribute>
+      </rng:group>
+      <rng:interleave>
+        <rng:ref name="name" />
+        <rng:ref name="version" />
+        <rng:ref name="date" />
+        <rng:ref name="description" />
+        <rng:oneOrMore>
+          <rng:ref name="maintainer" />
+        </rng:oneOrMore>
+        <rng:oneOrMore>
+          <rng:ref name="license" />
+        </rng:oneOrMore>
+        <rng:optional>
+          <rng:ref name="icon" />
+        </rng:optional>
+        <rng:ref name="content" />
+
+        <rng:oneOrMore>
+          <rng:ref name="url" />
+        </rng:oneOrMore>
+
+        <rng:zeroOrMore>
+          <rng:ref name="author" />
+        </rng:zeroOrMore>
+        <rng:zeroOrMore>
+          <rng:ref name="depend" />
+        </rng:zeroOrMore>
+        <rng:zeroOrMore>
+          <rng:ref name="conflict" />
+        </rng:zeroOrMore>
+        <rng:zeroOrMore>
+          <rng:ref name="replace" />
+        </rng:zeroOrMore>
+        <rng:zeroOrMore>
+          <rng:ref name="tag" />
+        </rng:zeroOrMore>
+        <rng:optional>
+          <rng:ref name="freecadmin" />
+        </rng:optional>
+        <rng:optional>
+          <rng:ref name="freecadmax" />
+        </rng:optional>
+        <rng:optional>
+          <rng:ref name="pythonmin" />
+        </rng:optional>
+      </rng:interleave>
+    </rng:element>
+  </rng:start>
+
+  <rng:define name="name">
+    <rng:element name="name">
+      <rng:text />
+    </rng:element>
+  </rng:define>
+  <rng:define name="version">
+    <rng:element name="version">
+      <rng:text />
+    </rng:element>
+  </rng:define>
+  <rng:define name="date">
+    <rng:element name="date">
+      <rng:text />
+    </rng:element>
+  </rng:define>
+  <rng:define name="description">
+    <rng:element name="description">
+      <rng:text />
+    </rng:element>
+  </rng:define>
+  <rng:define name="maintainer">
+    <rng:element name="maintainer">
+      <rng:attribute name="email" />
+      <rng:text />
+    </rng:element>
+  </rng:define>
+  <rng:define name="license">
+    <rng:element name="license">
+      <rng:optional>
+        <rng:attribute name="file" />
+      </rng:optional>
+      <rng:text />
+    </rng:element>
+  </rng:define>
+  <rng:define name="icon">
+    <rng:element name="icon">
+      <rng:text />
+    </rng:element>
+  </rng:define>
+  <rng:define name="freecadmin">
+    <rng:element name="freecadmin">
+      <rng:text />
+    </rng:element>
+  </rng:define>
+  <rng:define name="freecadmax">
+    <rng:element name="freecadmax">
+      <rng:text />
+    </rng:element>
+  </rng:define>
+  <rng:define name="pythonmin">
+    <rng:element name="pythonmin">
+      <rng:text />
+    </rng:element>
+  </rng:define>
+  <rng:define name="subdirectory">
+    <rng:element name="subdirectory">
+      <rng:text />
+    </rng:element>
+  </rng:define>
+  <rng:define name="classname">
+    <rng:element name="classname">
+      <rng:text />
+    </rng:element>
+  </rng:define>
+  <rng:define name="file">
+    <rng:element name="file">
+      <rng:text />
+    </rng:element>
+  </rng:define>
+  <rng:define name="tag">
+    <rng:element name="tag">
+      <rng:text />
+    </rng:element>
+  </rng:define>
+  <rng:define name="author">
+    <rng:element name="author">
+      <rng:optional>
+        <rng:attribute name="email" />
+      </rng:optional>
+      <rng:text />
+    </rng:element>
+  </rng:define>
+
+  <rng:define name="url">
+    <rng:element name="url">
+      <rng:attribute name="type" />
+      <rng:optional>
+        <rng:attribute name="branch" />
+      </rng:optional>
+      <rng:text />
+    </rng:element>
+  </rng:define>
+
+
+  <rng:define name="depend">
+    <rng:element name="depend">
+      <rng:optional>
+        <rng:attribute name="version_lt" />
+      </rng:optional>
+      <rng:optional>
+        <rng:attribute name="version_lte" />
+      </rng:optional>
+      <rng:optional>
+        <rng:attribute name="version_eq" />
+      </rng:optional>
+      <rng:optional>
+        <rng:attribute name="version_gte" />
+      </rng:optional>
+      <rng:optional>
+        <rng:attribute name="version_gt" />
+      </rng:optional>
+      <rng:optional>
+        <rng:attribute name="optional" />
+      </rng:optional>
+      <rng:optional>
+        <rng:attribute name="type">
+          <rng:choice>
+            <rng:value>automatic</rng:value>
+            <rng:value>addon</rng:value>
+            <rng:value>internal</rng:value>
+            <rng:value>python</rng:value>
+          </rng:choice>
+        </rng:attribute>
+      </rng:optional>
+      <rng:text />
+    </rng:element>
+  </rng:define>
+
+  <rng:define name="conflict">
+    <rng:element name="conflict">
+      <rng:optional>
+        <rng:attribute name="version_lt" />
+      </rng:optional>
+      <rng:optional>
+        <rng:attribute name="version_lte" />
+      </rng:optional>
+      <rng:optional>
+        <rng:attribute name="version_eq" />
+      </rng:optional>
+      <rng:optional>
+        <rng:attribute name="version_gte" />
+      </rng:optional>
+      <rng:optional>
+        <rng:attribute name="version_gt" />
+      </rng:optional>
+      <rng:text />
+    </rng:element>
+  </rng:define>
+
+  <rng:define name="replace">
+    <rng:element name="replace">
+      <rng:optional>
+        <rng:attribute name="version_lt" />
+      </rng:optional>
+      <rng:optional>
+        <rng:attribute name="version_lte" />
+      </rng:optional>
+      <rng:optional>
+        <rng:attribute name="version_eq" />
+      </rng:optional>
+      <rng:optional>
+        <rng:attribute name="version_gte" />
+      </rng:optional>
+      <rng:optional>
+        <rng:attribute name="version_gt" />
+      </rng:optional>
+      <rng:text />
+    </rng:element>
+  </rng:define>
+
+  <rng:define name="content">
+    <rng:element name="content">
+      <rng:zeroOrMore>
+        <rng:choice>
+          <rng:element name="workbench">
+            <rng:ref name="ContentType" />
+          </rng:element>
+          <rng:element name="macro">
+            <rng:ref name="ContentType" />
+          </rng:element>
+          <rng:element name="preferencepack">
+            <rng:ref name="ContentType" />
+          </rng:element>
+          <rng:element name="bundle">
+            <rng:ref name="ContentType" />
+          </rng:element>
+          <rng:element name="other">
+            <rng:ref name="ContentType" />
+          </rng:element>
+        </rng:choice>
+      </rng:zeroOrMore>
+    </rng:element>
+  </rng:define>
+
+  <rng:define name="ContentType">
+    <rng:interleave>
+      <rng:optional>
+        <rng:ref name="name" />
+      </rng:optional>
+      <rng:optional>
+        <rng:ref name="version" />
+      </rng:optional>
+      <rng:optional>
+        <rng:ref name="date" />
+      </rng:optional>
+      <rng:optional>
+        <rng:ref name="description" />
+      </rng:optional>
+      <rng:zeroOrMore>
+        <rng:ref name="maintainer" />
+      </rng:zeroOrMore>
+      <rng:zeroOrMore>
+        <rng:ref name="license" />
+      </rng:zeroOrMore>
+      <rng:optional>
+        <rng:ref name="icon" />
+      </rng:optional>
+      <rng:zeroOrMore>
+        <rng:ref name="url" />
+      </rng:zeroOrMore>
+      <rng:zeroOrMore>
+        <rng:ref name="author" />
+      </rng:zeroOrMore>
+      <rng:zeroOrMore>
+        <rng:ref name="depend" />
+      </rng:zeroOrMore>
+      <rng:zeroOrMore>
+        <rng:ref name="conflict" />
+      </rng:zeroOrMore>
+      <rng:zeroOrMore>
+        <rng:ref name="replace" />
+      </rng:zeroOrMore>
+      <rng:zeroOrMore>
+        <rng:ref name="tag" />
+      </rng:zeroOrMore>
+      <rng:optional>
+        <rng:ref name="freecadmin" />
+      </rng:optional>
+      <rng:optional>
+        <rng:ref name="freecadmax" />
+      </rng:optional>
+      <rng:optional>
+        <rng:ref name="pythonmin" />
+      </rng:optional>
+      <rng:optional>
+        <rng:ref name="subdirectory" />
+      </rng:optional>
+      <rng:optional>
+        <rng:ref name="classname" />
+      </rng:optional>
+      <rng:zeroOrMore>
+        <rng:ref name="file" />
+      </rng:zeroOrMore>
+    </rng:interleave>
+  </rng:define>
+</rng:grammar>

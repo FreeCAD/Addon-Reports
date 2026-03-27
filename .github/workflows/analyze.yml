@@ -1,0 +1,49 @@
+name: Analyze FreeCAD Addons
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Run monthly on the 1st at 06:00 UTC
+    - cron: "0 6 1 * *"
+
+permissions:
+  contents: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install git (required for cloning addons)
+        run: sudo apt-get update && sudo apt-get install -y git
+
+      - name: Run analysis
+        run: uv run main.py repos
+
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: report-${{ steps.date.outputs.date }}
+          name: Addons Report ${{ steps.date.outputs.date }}
+          body: |
+            Automated FreeCAD Addons analysis report generated on ${{ steps.date.outputs.date }}.
+          files: output/*
+          fail_on_unmatched_files: false

@@ -1,0 +1,169 @@
+{#
+SPDX-License-Identifier: LGPL-2.1-or-later
+SPDX-FileCopyrightText: 2026 Frank David Martínez Muñoz <mnesarco>
+SPDX-FileNotice: Part of FreeCAD.
+#}
+
+{% import "components.html" as comp %}
+
+
+{% macro stat_num(value, label, icon) %}
+    <div class="col-3">
+        <div class="fw-bold fs-4"><i class="ti ti-{{icon}}"></i> {{ value | fmt_float }}</div>
+        <div class="text-secondary small text-uppercase"
+            style="letter-spacing:.04em;font-size:.7rem">{{ label }}</div>
+    </div>
+{% endmacro %}
+
+
+{% macro dependencies(item) %}
+    {% if item.requirements %}
+        {% call comp.collapsible("Dependencies", item.requirements | length, icon="package") %}
+            <div class="dep-list">
+                <ul>
+                {% for dep in item.requirements %}
+                    <li>
+                    {% if "Internal:" in dep %}
+                        <span class="badge bg-green-lt">{{ dep }}</span>
+                    {% elif "Pip:" in dep %}
+                        <span class="badge bg-blue-lt">{{ dep }}</span>
+                    {% elif "Warn:" in dep %}
+                        <span class="badge bg-red-lt">{{ dep }}</span>
+                    {% elif "Mod:" in dep %}
+                        <span class="badge bg-yellow-lt">{{ dep }}</span>
+                    {% elif "Compat:" in dep %}
+                        <span class="badge bg-orange-lt">{{ dep }}</span>
+                    {% elif "Error:" in dep %}
+                        <span class="badge bg-danger text-danger-fg">{{ dep }}</span>
+                    {% else %}
+                        <span class="badge bg-secondary-lt">{{ dep }}</span>
+                    {% endif %}
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
+        {% endcall %}
+    {% endif %}
+{% endmacro %}
+
+
+{% macro detail_header(item) %}
+    <div class="card-header">
+        <div>
+            <h3 class="card-title mb-1">
+                <i class="ti ti-package me-2"></i>{{ item.name }} <span class="badge bg-green-lt"
+                    style="font-size: 0.5em;">{{ item.pkg_branch }}</span>
+            </h3>
+            <h4 class="text-secondary">{{ ellipsis(item.pkg_description, default="No description") }}</h4>
+        </div>
+        <div class="card-actions d-flex align-items-center gap-2">
+            <span class="badge bg-{{ item.score | score_color }} text-{{ item.score | score_color }}-fg fs-5 px-3 py-2">{{ item.score | fmt_float }} / 100</span>
+            <a href="#top" class="btn btn-ghost-secondary btn-icon btn-sm" title="Back to top">
+                <i class="ti ti-arrow-up"></i>
+            </a>
+        </div>
+    </div>
+{% endmacro %}
+
+
+{% macro manifest(item) %}
+    {% if item.pkg_branch or item.pkg_version or item.pkg_license %}
+        {% call comp.collapsible("Manifest", icon="file-description") %}
+            <div class="card-body py-2">
+                <div class="datagrid">
+                    <div class="datagrid-item">
+                        <div class="datagrid-title">Branch</div>
+                        <div class="datagrid-content">{{ item.pkg_branch | default("-") }}</div>
+                    </div>
+                    <div class="datagrid-item">
+                        <div class="datagrid-title">Version</div>
+                        <div class="datagrid-content">{{ item.pkg_version | default("-") }}</div>
+                    </div>
+                    <div class="datagrid-item">
+                        <div class="datagrid-title">License</div>
+                        <div class="datagrid-content">{{ item.pkg_license | default("-") }}</div>
+                    </div>
+                </div>
+            </div>
+        {% endcall %}
+    {% endif %}
+{% endmacro %}
+
+
+{% macro stats(item) %}
+    <div class="col-lg-4">
+        <div class="card bg-transparent border">
+            <div class="card-header py-2">
+                <h4 class="card-title m-0"><i class="ti ti-chart-dots me-2"></i>Statistics</h4>
+            </div>
+            <div class="card-body py-2">
+                <div class="row g-2 text-center">
+                    {{ stat_num(item.stats.downloads_365d, "DL(Yr)", "download") }}
+                    {{ stat_num(item.stats.downloads_30d, "DL(Mo)", "download") }}
+                    {{ stat_num(item.stats.stargazers, "Stars", "star") }}
+                    {{ stat_num(item.stats.open_issues, "Issues", "bug") }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+
+{% macro repository(item) %}
+    <div class="col-lg-8">
+        <div class="card bg-transparent border">
+            <div class="card-header py-2">
+                <h4 class="card-title m-0"><i class="ti ti-brand-git me-2"></i>Repository</h4>
+            </div>
+            <div class="card-body py-2">
+                <a href="{{ item.git_repo }}" target="_blank"><i class="ti ti-brand-git me-1"></i>{{ item.git_repo }}</a>
+                <div class="text-secondary">
+                    <i class="ti ti-git-branch me-1"></i>{{ item.git_ref | default("-") }}
+                    <span class="mx-2">&middot;</span>
+                    {% if item.tag %}
+                        <i class="ti ti-tag me-1"></i>{{ item.tag }}
+                        <span class="mx-2">&middot;</span>
+                    {% endif %}
+                    <i class="ti ti-clock me-1"></i><span title="Last updated {{ item.updated }}">{{ item.updated | time_ago }}</span>
+                    <span class="mx-2">&middot;</span>
+                    <i class="ti ti-file-code me-1"></i>{{ item.files }} python files
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+
+{% macro detail_card(item) %}
+<div class="card detail-card score-{{ item.score|score_color }} mb-4" id="{{ item|rpt_id }}">
+
+    {{ detail_header(item) }}
+
+    <div class="card-body">
+
+        <div class="row g-4 mb-4">
+            {{ repository(item) }}
+            {{ stats(item) }}
+        </div>
+
+        {{ manifest(item) }}
+
+        {{ dependencies(item) }}
+
+        {% call comp.collapsible("Python Issues", item.total_issues) %}
+            {{ issues_section(item, max_items_per_group) }}
+        {% endcall %}
+
+        {% call comp.collapsible("Authors/Maintainers", item.pkg_people | length, icon="user") %}
+            {% for person in item.pkg_people %}
+                <span class="badge bg-blue text-blue-fg" style="margin-right: 1em;"><i class="ti ti-user me-2"></i>{{ person }}</span>
+            {% endfor %}
+        {% endcall %}
+
+    </div>
+</div>
+{% endmacro %}
+
+{% for item in reports %}
+    {{ detail_card(item) }}
+{% endfor %}

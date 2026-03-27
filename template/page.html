@@ -1,0 +1,33 @@
+<!--
+SPDX-License-Identifier: LGPL-2.1-or-later
+SPDX-FileCopyrightText: 2026 Frank David Martínez Muñoz <mnesarco>
+SPDX-FileNotice: Part of FreeCAD.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.2.0/dist/tabler-icons.min.css" />
+    <style>
+        {% include "page.css" %}
+    </style>
+    <script>(function () { var t = localStorage.getItem('fpa-theme'); if (t) document.documentElement.setAttribute('data-bs-theme', t); })()</script>
+</head>
+
+<body >
+    <div >
+        {% include "header.html" %}
+        {% include "body.html" %}
+        {% include "footer.html" %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+    <script>
+        {% include "page.js" %}
+    </script>
+</body>
+
+</html>

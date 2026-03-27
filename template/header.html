@@ -1,0 +1,29 @@
+{#
+SPDX-License-Identifier: LGPL-2.1-or-later
+SPDX-FileCopyrightText: 2026 Frank David Martínez Muñoz <mnesarco>
+SPDX-FileNotice: Part of FreeCAD.
+#}
+
+<div class="d-print-none dashboard-header sticky-top">
+    <div class="container-xl">
+        <div class="row align-items-center">
+            <div class="col">
+                <div class="text-start">
+                    <div class="page-pretitle">Generated</div>
+                    <div class="text-secondary">{{ time }}</div>
+                </div>
+            </div>
+            <div class="col-auto text-center">
+                <div class="page-pretitle">FreeCAD Project Association</div>
+                <div class="page-title">{{ title }}</div>
+            </div>
+            <div class="col d-flex justify-content-end align-items-center gap-3">
+                <button id="theme-toggle" class="theme-toggle" title="Toggle dark / light mode">
+                    <i class="ti ti-moon"></i>
+                    <span class="theme-label">Dark</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="top" style="height: 0px;"></div>

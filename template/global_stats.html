@@ -1,0 +1,33 @@
+{#
+SPDX-License-Identifier: LGPL-2.1-or-later
+SPDX-FileCopyrightText: 2026 Frank David Martínez Muñoz <mnesarco>
+SPDX-FileNotice: Part of FreeCAD.
+#}
+
+{% macro stat_card(icon, color, value, label) %}
+    <div class="col-6 col-sm-4 col-xl-2">
+      <div class="card card-sm">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-auto">
+              <span class="bg-{{ color }} text-{{ color }}-fg avatar"><i class="ti ti-{{ icon }}"></i></span>
+            </div>
+            <div class="col">
+              <div class="fw-bold fs-3">{{ value|fmt_float }}</div>
+              <div class="text-secondary small text-nowrap">{{ label }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endmacro %}
+
+<div class="row row-deck row-cards mb-4">
+    {{ stat_card("packages",       "primary",             total_addons, "Total Addons"     ) }}
+    {{ stat_card("chart-bar",      avg_score|score_color, avg_score,    "Avg Score"        ) }}
+    {{ stat_card("file-code",      "cyan",                total_files,  "Files Analyzed"   ) }}
+    {{ stat_card("alert-triangle", "danger",              total_high,   "High Issues"      ) }}
+    {{ stat_card("alert-circle",   "warning",             total_medium, "Medium Issues"    ) }}
+    {{ stat_card("download",       "purple",              total_dl_y,   "Downloads (Year)" ) }}
+</div>
+

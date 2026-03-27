@@ -1,0 +1,24 @@
+{
+    "files.exclude": {
+        "repos": true,
+        "special": true,
+        "catalog": true,
+        ".tmp": true
+    },
+    "cSpell.words": [
+        "datagrid",
+        "elif",
+        "endcall",
+        "endfor",
+        "endmacro",
+        "gitcmd",
+        "github",
+        "matomo",
+        "pipreqs",
+        "searchbar",
+        "stylesheet",
+        "Tabler"
+    ],
+    "files.associations": { "*.html": "jinja-html", "*.css": "jinja-css", "*.js": "jinja-js" },
+    "emmet.includeLanguages": {"jinja-html": "html", "jinja-css": "css", "jinja-js": "js"}
+}

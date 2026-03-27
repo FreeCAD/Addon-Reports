@@ -1,20 +1,52 @@
-<!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
-<!-- SPDX-FileNotice: Part of the FreeCAD project. -->
+# FreeCAD Addon Analyzer
 
+Static quality analysis tool for all registered [FreeCAD](https://www.freecad.org/) addons. It clones every addon from the official catalog, runs a battery of checks, and produces a ranked HTML report.
 
-<div align = 'center' >
+## Reports
 
-# Addon Reports
+A fresh report is generated automatically on the **1st of each month** via GitHub Actions and published as a [GitHub Release](../../releases/latest). You can also trigger a report manually from the Actions tab.
 
-Technical quality report for addons.
+## What gets checked
 
-<br/>
+| Check | Description |
+|---|---|
+| **Bandit** | Python security-oriented static analysis |
+| **Dependencies** | Python package requirements extracted with pipreqs |
+| **package.xml** | Validates presence and content of the addon metadata file |
+| **Layout** | Verifies required files (`README`, `LICENSE`, `package.xml`) and init-module conventions |
+| **GitHub stats** | Stars, forks, subscribers, open issues |
+| **Matomo stats** | Download counts from the FreeCAD Addon Manager |
 
-[ [Reports] ]
+## Scoring
 
-</div>
+Every addon starts at **100 points** and loses points for each issue found:
 
-<br/>
+| Severity | Penalty |
+|---|---|
+| HIGH | **−3** per issue |
+| MEDIUM | **−1** per issue |
+| LOW | **−0.1** per issue |
 
+The final score is clamped to a minimum of **0**. Addons are ranked by score (descending), then by downloads.
 
-[Reports]: ./Reports/
+## Running locally
+
+**Requirements:** Python ≥ 3.11, [uv](https://github.com/astral-sh/uv), and git.
+
+```bash
+# Full run — clones all addons and generates the report
+uv run main.py repos
+
+# Skip cloning, reuse already cloned repos
+uv run main.py repos --skip-clone
+
+# Analyze only the first N addons (useful for debugging)
+uv run main.py repos --max 10
+```
+
+The report is written to the `output/` directory as a standalone HTML file (styled with [Tabler](https://tabler.io/) via CDN).
+
+## Contributing
+
+- PRs that follow **PEP 8** and maintain good code quality are welcome.
+- AI-generated slop is generally not accepted.
