@@ -5,7 +5,7 @@ import typer
 from typing import Annotated
 
 
-def main(
+def entry(
     repositories: Annotated[
         str,
         typer.Argument(
@@ -28,5 +28,8 @@ def main(
     pipeline.start()
 
 
+def main():
+    typer.run(entry)
+
 if __name__ == "__main__":
-    typer.run(main)
+    main()
