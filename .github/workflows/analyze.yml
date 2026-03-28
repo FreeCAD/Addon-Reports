@@ -47,3 +47,24 @@ jobs:
             Automated FreeCAD Addons analysis report generated on ${{ steps.date.outputs.date }}.
           files: output/*
           fail_on_unmatched_files: false
+
+      - name: Deploy reports to gh-pages
+        run: |
+          # Copy output to a temporary location
+          mkdir /tmp/reports
+          cp -a output/. /tmp/reports/
+          # Switch to gh-pages branch
+          git fetch origin gh-pages:gh-pages
+          git checkout gh-pages
+          # Copy reports from temp to root
+          cp -a /tmp/reports/. .
+          # Copy the newest report-*.html to index.html
+          newest_report=$(ls -t report-*.html 2>/dev/null | head -n1)
+          if [ -n "$newest_report" ]; then
+            cp "$newest_report" index.html
+          fi
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .
+          git commit -m "Update reports and index.html [skip ci]" || echo "No changes to commit."
+          git push origin gh-pages
