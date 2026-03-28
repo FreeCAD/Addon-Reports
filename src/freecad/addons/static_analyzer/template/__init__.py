@@ -69,9 +69,9 @@ def _time_ago_filter(past_datetime: datetime | None) -> str:
     months = remaining_days // 30
     days = remaining_days % 30
     if years > 0:
-        return f"{years} yr"
+        return f"{round(total_days/365)} yr"
     if months > 0:
-        return f"{months} mo"
+        return f"{round(remaining_days / 30)} mo"
     if days > 0:
         return f"{days} d"
     return "today"
