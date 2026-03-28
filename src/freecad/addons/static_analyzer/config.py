@@ -28,6 +28,7 @@ class _Config:
     repositories_dir = "repos"
     skip_clone: bool = False
     max_repos: int = -1
+    base_dir = "."
 
 
 Config = _Config()

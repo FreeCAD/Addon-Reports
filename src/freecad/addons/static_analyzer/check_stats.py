@@ -16,9 +16,9 @@ from typing import Any, cast
 
 import httpx
 
-from config import Config
-from models import Analysis
-from utils import thread_safe_cache
+from .config import Config
+from .models import Analysis
+from .utils import thread_safe_cache
 
 _matomo_label_pattern = re.compile(
     r"/CatalogCache/(?P<addon>.*?)/\d+-(?P<branch>.*?)\.zip"

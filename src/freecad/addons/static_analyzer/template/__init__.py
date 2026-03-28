@@ -14,7 +14,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 import re
 import html
-from models import Analysis
+from ..models import Analysis
 
 _loader = FileSystemLoader(Path(__file__).parent)
 _env = Environment(loader=_loader)

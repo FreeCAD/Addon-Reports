@@ -13,7 +13,7 @@ from pathlib import Path
 
 from lxml import etree  # type: ignore
 
-from models import Analysis, Issue
+from .models import Analysis, Issue
 
 SCHEMA = "https://wiki.freecad.org/Package_Metadata"
 

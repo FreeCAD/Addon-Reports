@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from models import Analysis, Issue
+from .models import Analysis, Issue
 
 ISSUE_CODE_INIT_ON_EXEC = "L001"
 ISSUE_CODE_INIT_IN_FREECAD = "L002"

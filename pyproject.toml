@@ -5,9 +5,11 @@ description = "Static Addon Quality Analyzer"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "LGPL-2.1-or-later"
+
 authors = [
     { name = "Frank Martinez", email = "mnesarco@gmail.com" },
 ]
+
 dependencies = [
     "bandit>=1.8.6",
     "httpx>=0.28.1",
@@ -16,17 +18,21 @@ dependencies = [
     "pipreqs",
     "typer>=0.24.1",
 ]
+
 keywords = ["freecad", "addon", "static-analysis", "quality"]
+
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Quality Assurance",
 ]
+
+[project.scripts]
+analyze = "freecad.addons.static_analyzer.main:main"
 
 [project.urls]
 Homepage = "https://github.com/FreeCAD/Addon-Reports"
@@ -40,3 +46,9 @@ dev = [
 
 [tool.uv.sources]
 pipreqs = { git = "https://github.com/bndr/pipreqs.git" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.uv]
+package = true

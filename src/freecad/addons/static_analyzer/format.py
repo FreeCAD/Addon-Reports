@@ -10,8 +10,8 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-import template
-from models import Analysis
+from . import template
+from .models import Analysis
 
 
 def report(reports: list[Analysis]) -> str:

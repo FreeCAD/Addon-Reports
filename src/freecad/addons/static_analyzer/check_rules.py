@@ -9,9 +9,9 @@ Apply custom rules defined in rules.py
 from __future__ import annotations
 
 from pathlib import Path
-from models import Analysis
+from .models import Analysis
 
-import rules
+from . import rules
 
 RULES = [
     rule

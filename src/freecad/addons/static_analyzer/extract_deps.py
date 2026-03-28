@@ -12,7 +12,8 @@ import re
 import subprocess
 from pathlib import Path
 
-from models import Analysis
+from .models import Analysis
+from .config import Config
 
 INTERNALS = {
     mod.lower()
@@ -80,7 +81,7 @@ def extend_allowed(path: Path, data: set[str]) -> None:
 
 def allowed() -> set[str]:
     data = set()
-    base = Path(__file__).parent / "catalog"
+    base = Path(Config.base_dir) / "catalog"
     for file in CONSTRAINTS_FILES:
         extend_allowed(base / file, data)
     return data
@@ -89,13 +90,13 @@ def allowed() -> set[str]:
 def repo_requirements(analysis: Analysis, repo: Path) -> None:
     ALLOWED = allowed()
     print(f"** Analyzing requirements of {repo!s}")
-    tmp = Path(__file__).parent / ".tmp"
+    tmp = Path(Config.base_dir) / ".tmp"
     if not tmp.exists():
         tmp.mkdir()
     file = tmp / f"{repo.stem}.txt"
     if not file.exists():
         print(f"** Generating {repo.stem}.txt")
-        result = subprocess.run(
+        subprocess.run(
             [
                 "uv",
                 "run",

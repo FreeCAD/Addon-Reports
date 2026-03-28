@@ -10,8 +10,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from check_layout import ISSUE_CODE_INIT_IN_FREECAD, ISSUE_CODE_INIT_ON_EXEC
-from models import Analysis
+from .check_layout import ISSUE_CODE_INIT_IN_FREECAD, ISSUE_CODE_INIT_ON_EXEC
+from .models import Analysis
 
 
 def rule_AddonManager(analysis: Analysis, repo: Path) -> None:

@@ -35,13 +35,13 @@ The final score is clamped to a minimum of **0**. Addons are ranked by score (de
 
 ```bash
 # Full run — clones all addons and generates the report
-uv run main.py repos
+uv run analyze
 
 # Skip cloning, reuse already cloned repos
-uv run main.py repos --skip-clone
+uv run analyze --skip-clone
 
 # Analyze only the first N addons (useful for debugging)
-uv run main.py repos --max 10
+uv run analyze --max 10
 ```
 
 The report is written to the `output/` directory as a standalone HTML file (styled with [Tabler](https://tabler.io/) via CDN).

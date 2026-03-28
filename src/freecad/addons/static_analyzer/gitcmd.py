@@ -15,7 +15,7 @@ from datetime import datetime
 from pathlib import Path
 from threading import Thread
 
-from config import Config
+from .config import Config
 
 
 def clone_repo(repo_url: str, clone_path: str, branch: str) -> None:
@@ -42,7 +42,7 @@ def clone_repo(repo_url: str, clone_path: str, branch: str) -> None:
 
 
 def clone_catalog() -> None:
-    base = Path(__file__).parent
+    base = Path(Config.base_dir)
     cat = base / "catalog"
     clone_repo(Config.catalog_repo, str(cat.resolve()), Config.catalog_ref)
 
@@ -52,10 +52,10 @@ def clone_repos() -> None:
     Reads repository URLs from AddonCatalog.json and clones them into the ./repos directory.
     """
     clone_catalog()
-    cat = Path(__file__).parent / "catalog" / Config.catalog_path
+    cat = Path(Config.base_dir) / "catalog" / Config.catalog_path
     data: dict[str, object] = json.loads(cat.read_text())
 
-    repos = Path(__file__).parent / Config.repositories_dir
+    repos = Path(Config.base_dir) / Config.repositories_dir
     if not repos.exists():
         repos.mkdir(parents=True)
 

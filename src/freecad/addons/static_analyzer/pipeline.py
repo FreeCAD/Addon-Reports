@@ -13,16 +13,16 @@ import re
 from pathlib import Path
 from threading import Thread
 
-import format as fmt
-import gitcmd
-from check_bandit import check_bandit
-from check_layout import check_layout
-from check_package import check_package
-from check_rules import check_rules
-from check_stats import check_stats
-from extract_deps import repo_requirements
-from models import Analysis, Issue
-from config import Config
+from . import format as fmt
+from . import gitcmd
+from .check_bandit import check_bandit
+from .check_layout import check_layout
+from .check_package import check_package
+from .check_rules import check_rules
+from .check_stats import check_stats
+from .extract_deps import repo_requirements
+from .models import Analysis, Issue
+from .config import Config
 
 
 def search_files(base: Path, name: str, *, regex: bool = False) -> list[Path]:
@@ -82,7 +82,7 @@ def start():
     if not Config.skip_clone:
         gitcmd.clone_repos()
 
-    target_path = Path(__file__).parent / Config.repositories_dir
+    target_path = Path(Config.base_dir) / Config.repositories_dir
     if not target_path.exists():
         target_path.mkdir(parents=True)
 
@@ -116,7 +116,7 @@ def start():
         if t is not None:
             t.join()
 
-    output_dir = Path(__file__).parent / "output"
+    output_dir = Path(Config.base_dir) / "output"
     output_dir.mkdir(exist_ok=True)
 
     date = datetime.strftime(datetime.now(timezone.utc), "%Y-%m-%d")

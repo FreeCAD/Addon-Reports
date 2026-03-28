@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: LGPL-2.1-or-later
+# SPDX-FileCopyrightText: 2026 Frank David Martínez Muñoz <mnesarco>
+# SPDX-FileNotice: Part of FreeCAD.
+
+"""
+FreeCAD Addons Tools.
+"""
