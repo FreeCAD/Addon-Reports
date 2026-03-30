@@ -10,14 +10,14 @@ class _Config:
     matomo_stats_endpoint = "https://addons.freecad.org/stats/index.php"
     github_stats_endpoint = "https://www.freecad.org/addon_stats.json"
 
-    catalog_repo = "https://github.com/FreeCAD/FreeCAD-addons"
-    catalog_ref = "master"
-    catalog_path = "AddonCatalog.json"
+    # Old Catalog
+    # catalog_repo = "https://github.com/FreeCAD/FreeCAD-addons"
+    # catalog_ref = "master"
+    # catalog_path = "AddonCatalog.json"
 
-    # TODO: New Index
-    # catalog_repo = "https://github.com/FreeCAD/Addons"
-    # catalog_ref = "main"
-    # catalog_path = "Data/Python/Index.json"
+    catalog_repo = "https://github.com/FreeCAD/Addons"
+    catalog_ref = "main"
+    catalog_path = "Data/Index.json"
 
     excluded_addons = {
         "FreeCAD-Documentation-html",
