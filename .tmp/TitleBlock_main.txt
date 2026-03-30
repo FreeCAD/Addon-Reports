@@ -1,4 +1,0 @@
-matplotlib
-openpyxl
-pycurl
-PySide

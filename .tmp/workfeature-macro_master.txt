@@ -1,6 +1,0 @@
-Draft
-Mesh
-numpy
-pivy
-PySide
-PySide2

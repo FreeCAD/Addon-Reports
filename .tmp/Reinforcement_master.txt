@@ -1,5 +1,0 @@
-Arch
-Draft
-Pillow
-PySide
-PySide6

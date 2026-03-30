@@ -1,4 +1,0 @@
-Draft
-Mesh
-pivy
-PySide

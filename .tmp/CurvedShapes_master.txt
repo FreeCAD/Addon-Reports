@@ -1,4 +1,0 @@
-BOPTools
-Draft
-PySide
-Sketcher

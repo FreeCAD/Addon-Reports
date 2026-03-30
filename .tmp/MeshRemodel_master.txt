@@ -1,7 +1,0 @@
-Draft
-Mesh
-numpy
-PySide
-PySide6
-Requests
-shiboken6

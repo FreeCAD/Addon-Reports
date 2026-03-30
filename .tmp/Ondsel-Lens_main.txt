@@ -1,5 +1,0 @@
-config
-PyJWT
-PySide
-Requests
-tzlocal

@@ -1,4 +1,0 @@
-numpy
-Pillow
-PySide
-PySide6

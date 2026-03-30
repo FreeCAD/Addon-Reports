@@ -1,7 +1,0 @@
-matplotlib
-numpy
-Path
-pip
-PyQt5
-PySide
-scipy

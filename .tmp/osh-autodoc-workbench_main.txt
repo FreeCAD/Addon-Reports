@@ -1,6 +1,0 @@
-Draft
-pivy
-PySide
-PySide6
-setuptools
-TechDraw

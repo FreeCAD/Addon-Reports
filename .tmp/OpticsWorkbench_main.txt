@@ -1,6 +1,0 @@
-BOPTools
-matplotlib
-numpy
-PySide
-scipy
-Sketcher

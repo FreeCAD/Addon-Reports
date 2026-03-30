@@ -1,4 +1,0 @@
-Draft
-numpy
-pivy
-PySide

@@ -1,6 +1,0 @@
-Arch
-BOPTools
-Draft
-numpy
-pivy
-PySide

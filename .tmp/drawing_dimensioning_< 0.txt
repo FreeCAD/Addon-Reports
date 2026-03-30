@@ -1,4 +1,0 @@
-dxfwrite
-matplotlib
-numpy
-PySide

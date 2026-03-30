@@ -1,4 +1,0 @@
-Draft
-PySide
-pytest
-utils

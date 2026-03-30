@@ -1,4 +1,0 @@
-numpy
-pivy
-PySide
-scipy

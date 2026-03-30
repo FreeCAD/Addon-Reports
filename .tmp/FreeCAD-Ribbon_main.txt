@@ -1,6 +1,0 @@
-GitPython
-matplotlib
-numpy
-PySide
-Requests
-setuptools_scm

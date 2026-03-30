@@ -1,9 +1,0 @@
-BOPTools
-deep_translator
-Draft
-Path
-pivy
-PySide
-Sketcher
-Spreadsheet
-TechDraw

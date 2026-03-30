@@ -1,9 +1,0 @@
-cholespy
-femtools
-matplotlib
-numba
-numpy
-PySide
-pyvista
-scipy
-sksparse_minimal

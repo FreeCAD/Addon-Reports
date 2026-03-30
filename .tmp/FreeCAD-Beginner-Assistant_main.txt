@@ -1,9 +1,0 @@
-cryptography
-defusedxml
-endesive
-fontTools
-Pillow
-pymemtrace
-pympler
-Sketcher
-uharfbuzz

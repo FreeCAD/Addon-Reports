@@ -1,7 +1,0 @@
-behave
-ifcopenshell
-numpy
-PySide
-PySide2
-pystache
-utils

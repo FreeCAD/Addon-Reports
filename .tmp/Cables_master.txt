@@ -1,7 +1,0 @@
-Arch
-Draft
-pivy
-PySide
-setuptools
-Show
-Sketcher

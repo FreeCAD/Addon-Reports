@@ -1,9 +1,0 @@
-BOPTools
-inkex
-numpy
-pivy
-PySide
-PySide2
-PySide6
-setuptools
-TechDraw

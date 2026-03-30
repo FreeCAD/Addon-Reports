@@ -1,4 +1,0 @@
-Markdown
-pypandoc
-PySide
-PySide2

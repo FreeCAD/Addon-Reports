@@ -1,7 +1,0 @@
-Draft
-pivy
-pyperclip
-PySide2
-python_dateutil
-pytz
-xmlschema

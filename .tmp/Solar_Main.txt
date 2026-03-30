@@ -1,5 +1,0 @@
-Draft
-ladybug
-ladybug_geometry
-ladybug_radiance
-PySide

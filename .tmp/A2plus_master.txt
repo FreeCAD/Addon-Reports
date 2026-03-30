@@ -1,6 +1,0 @@
-numpy
-pivy
-PySide
-PySide2
-PySide6
-Spreadsheet

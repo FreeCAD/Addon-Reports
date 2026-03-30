@@ -1,6 +1,0 @@
-awkward
-blinker
-Mesh
-numpy
-qtpy
-scipy

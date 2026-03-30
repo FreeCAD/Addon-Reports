@@ -1,4 +1,0 @@
-BOPTools
-pivy
-PySide
-Show

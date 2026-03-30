@@ -1,9 +1,0 @@
-BOPTools
-numpy
-pivy
-PySide
-PySide2
-scipy
-setuptools
-Sketcher
-splipy

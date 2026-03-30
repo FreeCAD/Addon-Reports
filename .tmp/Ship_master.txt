@@ -1,8 +1,0 @@
-capytaine
-matplotlib
-numpy
-PySide
-scipy
-setuptools
-Spreadsheet
-xarray
