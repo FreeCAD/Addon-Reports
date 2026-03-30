@@ -1,11 +1,10 @@
-name: Analyze FreeCAD Addons
 
+name: Analyze FreeCAD Addons
 on:
   workflow_dispatch:
   schedule:
     # Run daily at 06:00 UTC
     - cron: "0 6 * * *"
-
 permissions:
   contents: write
 
@@ -13,18 +12,19 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     timeout-minutes: 120
-
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 # Update to latest if available
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v5 # Update to latest if available
         with:
           version: "latest"
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5 # Update to latest if available
         with:
           python-version: "3.11"
 
@@ -39,7 +39,7 @@ jobs:
         run: echo "date=$(date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2 # Update to latest if available
         with:
           tag_name: report-${{ steps.date.outputs.date }}
           name: Addons Report ${{ steps.date.outputs.date }}
