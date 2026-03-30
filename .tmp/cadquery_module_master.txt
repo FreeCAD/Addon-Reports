@@ -1,0 +1,4 @@
+build123d
+cadquery
+PySide
+PySide6

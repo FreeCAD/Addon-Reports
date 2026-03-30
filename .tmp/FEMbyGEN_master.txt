@@ -1,0 +1,11 @@
+Fem
+femtools
+freecad_addon_analyzer
+freecad_addon_analyzer.egg
+matplotlib
+Mesh
+numpy
+PySide
+PySide2
+PySide6
+scipy

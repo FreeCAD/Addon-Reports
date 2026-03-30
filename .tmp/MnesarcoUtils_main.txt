@@ -1,0 +1,4 @@
+Draft
+pivy
+pyserial
+PySide

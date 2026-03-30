@@ -1,0 +1,13 @@
+atomicwrites
+cloudpickle
+ipython
+matplotlib
+numpy
+pandas
+PySide
+PySide2
+PySide6
+pytest
+scipy
+seaborn
+sympy

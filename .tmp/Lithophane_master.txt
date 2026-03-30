@@ -1,0 +1,7 @@
+bpy
+Draft
+Mesh
+pivy
+Points
+PySide
+PySide2

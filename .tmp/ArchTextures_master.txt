@@ -1,0 +1,3 @@
+pivy
+PySide
+PySide2

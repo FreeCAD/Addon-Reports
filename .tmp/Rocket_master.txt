@@ -1,0 +1,10 @@
+docx
+Fem
+Materials
+matplotlib
+numpy
+pivy
+pycurl
+PySide
+Shapely
+Sketcher

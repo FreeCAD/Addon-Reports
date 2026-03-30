@@ -1,0 +1,11 @@
+defusedxml
+packaging
+pivy
+PySide
+PySide6
+rich
+scour
+shiboken2
+shiboken6
+toml
+typer

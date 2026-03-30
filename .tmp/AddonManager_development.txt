@@ -1,0 +1,10 @@
+defusedxml
+freecad_addon_analyzer
+freecad_addon_analyzer.egg
+importlib_metadata
+Markdown
+pyfakefs
+PySide
+PySide2
+PySide6
+Requests

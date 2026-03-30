@@ -1,0 +1,10 @@
+Draft
+numpy
+pivy
+py_slvs
+PySide
+PySide2
+scipy
+setuptools
+slvs
+sympy

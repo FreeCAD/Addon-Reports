@@ -1,0 +1,81 @@
+Metadata-Version: 2.4
+Name: freecad-addon-analyzer
+Version: 0.1.0
+Summary: Static Addon Quality Analyzer
+Author-email: Frank Martinez <mnesarco@gmail.com>
+License-Expression: LGPL-2.1-or-later
+Project-URL: Homepage, https://github.com/FreeCAD/Addon-Reports
+Project-URL: Repository, https://github.com/FreeCAD/Addon-Reports.git
+Project-URL: Issues, https://github.com/FreeCAD/Addon-Reports/issues
+Keywords: freecad,addon,static-analysis,quality
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Software Development :: Quality Assurance
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE-Code
+License-File: LICENSE-Data
+Requires-Dist: bandit>=1.8.6
+Requires-Dist: httpx>=0.28.1
+Requires-Dist: jinja2>=3.1.6
+Requires-Dist: lxml>=6.0.1
+Requires-Dist: pipreqs
+Requires-Dist: typer>=0.24.1
+Dynamic: license-file
+
+# FreeCAD Addon Analyzer
+
+Static quality analysis tool for all registered [FreeCAD](https://www.freecad.org/) addons. It clones every addon from the official catalog, runs a battery of checks, and produces a ranked HTML report.
+
+## Reports
+
+A fresh report is generated automatically on the **1st of each month** via GitHub Actions and published as a [GitHub Release](../../releases/latest). You can also trigger a report manually from the Actions tab.
+
+## What gets checked
+
+| Check | Description |
+|---|---|
+| **Bandit** | Python security-oriented static analysis |
+| **Dependencies** | Python package requirements extracted with pipreqs |
+| **package.xml** | Validates presence and content of the addon metadata file |
+| **Layout** | Verifies required files (`README`, `LICENSE`, `package.xml`) and init-module conventions |
+| **GitHub stats** | Stars, forks, subscribers, open issues |
+| **Matomo stats** | Download counts from the FreeCAD Addon Manager |
+
+## Scoring
+
+Every addon starts at **100 points** and loses points for each issue found:
+
+| Severity | Penalty |
+|---|---|
+| HIGH | **−3** per issue |
+| MEDIUM | **−1** per issue |
+| LOW | **−0.1** per issue |
+
+The final score is clamped to a minimum of **0**. Addons are ranked by score (descending), then by downloads.
+
+## Running locally
+
+**Requirements:** Python ≥ 3.11, [uv](https://github.com/astral-sh/uv), and git.
+
+```bash
+# Full run — clones all addons and generates the report
+uv run analyze
+
+# Skip cloning, reuse already cloned repos
+uv run analyze --skip-clone
+
+# Analyze only the first N addons (useful for debugging)
+uv run analyze --max 10
+```
+
+The report is written to the `output/` directory as a standalone HTML file (styled with [Tabler](https://tabler.io/) via CDN).
+
+## Contributing
+
+- PRs that follow **PEP 8** and maintain good code quality are welcome.
+- AI-generated slop is generally not accepted.

@@ -1,0 +1,8 @@
+BOPTools
+certifi
+Fem
+matplotlib
+numpy
+pivy
+PyQt5
+PySide

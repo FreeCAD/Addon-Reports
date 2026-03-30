@@ -1,0 +1,8 @@
+Arch
+Draft
+ezdxf
+GitPython
+PyQt5
+PySide
+PySide2
+sec

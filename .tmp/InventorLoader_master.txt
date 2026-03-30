@@ -1,0 +1,10 @@
+Draft
+ezdxf
+Mesh
+olefile
+pivy
+PySide
+Sketcher
+xlrd
+xlutils
+xlwt

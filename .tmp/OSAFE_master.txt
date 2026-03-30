@@ -1,0 +1,14 @@
+Arch
+BOPTools
+docx
+Draft
+ezdxf
+GitPython
+matplotlib
+numpy
+pandas
+pivy
+PySide
+pytest
+Sketcher
+wmi

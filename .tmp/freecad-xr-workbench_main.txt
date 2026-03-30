@@ -1,0 +1,10 @@
+Draft
+numpy
+pivy
+PyOpenGL
+PySide
+PySide2
+PySide6
+shiboken2
+shiboken6
+xr

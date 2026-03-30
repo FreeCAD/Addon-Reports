@@ -1,0 +1,9 @@
+freecad_addon_analyzer
+freecad_addon_analyzer.egg
+MaterialX
+Mesh
+numpy
+pivy
+PyQt6
+PySide
+qtpy

@@ -1,0 +1,8 @@
+Draft
+ezdxf
+Mesh
+numpy
+pivy
+ply
+PySide
+scadParser

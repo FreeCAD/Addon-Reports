@@ -1,0 +1,13 @@
+dolfin
+Fem
+femtools
+FemTools
+matplotlib
+numpy
+pivy
+Plot
+PyFoam
+PyQt4
+PySide
+PySide2
+six

@@ -1,0 +1,8 @@
+Arch
+BOPTools
+Draft
+numpy
+pivy
+PySide
+PySide2
+typing_extensions

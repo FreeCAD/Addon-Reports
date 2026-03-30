@@ -1,0 +1,7 @@
+matplotlib
+numpy
+pivy
+PySide
+PyYAML
+scipy
+setuptools

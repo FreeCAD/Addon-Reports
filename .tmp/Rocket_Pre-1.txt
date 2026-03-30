@@ -1,0 +1,8 @@
+Fem
+matplotlib
+numpy
+pivy
+pycurl
+PySide
+PySide2
+Sketcher

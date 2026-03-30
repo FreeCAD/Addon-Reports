@@ -1,0 +1,17 @@
+Aligner
+BOPTools
+Caliper
+Draft
+ezdxf
+freecad_addon_analyzer
+freecad_addon_analyzer.egg
+Mesh
+Mover
+numpy
+Path
+pivy
+PySide
+Requests
+Sketcher
+stepZ
+TechDraw

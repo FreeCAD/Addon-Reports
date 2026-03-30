@@ -1,0 +1,7 @@
+BOPTools
+Draft
+Drawing
+networkx
+PySide
+TechDraw
+TestApp

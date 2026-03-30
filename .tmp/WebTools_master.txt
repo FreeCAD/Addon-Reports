@@ -1,0 +1,7 @@
+Draft
+GitPython
+ifcopenshell
+importers
+Mesh
+PySide
+Requests

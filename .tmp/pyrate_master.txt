@@ -1,0 +1,10 @@
+hypothesis
+matplotlib
+nltk
+numpy
+Points
+PySide
+PyYAML
+scipy
+setuptools
+sympy

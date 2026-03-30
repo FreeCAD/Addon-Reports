@@ -1,0 +1,6 @@
+BOPTools
+Draft
+Mesh
+pivy
+PyQt5
+PySide

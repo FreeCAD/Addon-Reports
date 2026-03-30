@@ -1,0 +1,9 @@
+Draft
+geomdl
+matplotlib
+numpy
+PySide
+PySide2
+scipy
+Show
+Sketcher
