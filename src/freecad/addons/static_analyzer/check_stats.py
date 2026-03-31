@@ -97,7 +97,16 @@ def check_stats(analysis: Analysis, repo: Path) -> None:
     if count_30d := downloads_30d.get((analysis.name, analysis.git_ref)):
         analysis.stats.downloads_30d = count_30d.value
 
-    if github := github_data.get(analysis.git_repo):
+    github = github_data.get(analysis.git_repo)
+    if not github:
+        if analysis.git_repo.endswith(".git"):
+            repo_url = analysis.git_repo[0:-4]
+            github = github_data.get(repo_url)
+        else:
+            repo_url = f"{analysis.git_repo}.git"
+            github= github_data.get(repo_url)
+
+    if github:
         analysis.stats.direct_forks = github.get("forks_count", 0)
         analysis.stats.total_forks = github.get("network_count", 0)
         analysis.stats.stargazers = github.get("stargazers_count", 0)
