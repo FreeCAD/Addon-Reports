@@ -96,7 +96,7 @@ def start():
             name, _, branch_display = path.name.rpartition("_")
             analysis = Analysis(
                 name,
-                git_ref=gitcmd.get_branch(path),
+                git_ref=gitcmd.get_branch(path) or gitcmd.get_tag(path),
                 git_branch_display=branch_display,
             )
             reports.append(analysis)
