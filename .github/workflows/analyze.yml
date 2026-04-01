@@ -3,8 +3,8 @@ name: Analyze FreeCAD Addons
 on:
   workflow_dispatch:
   schedule:
-    # Run daily at 06:00 UTC
-    - cron: "0 6 * * *"
+    # Run daily at 05:23 UTC
+    - cron: "23 5 * * *"
 permissions:
   contents: write
 
