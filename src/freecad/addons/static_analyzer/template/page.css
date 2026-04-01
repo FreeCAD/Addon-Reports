@@ -214,7 +214,7 @@ details.issue-group[open] summary::before {
 
 /* ── detail cards ─────────────────────────────────────────────────────── */
 .detail-card {
-    scroll-margin-top: 1rem;
+    scroll-margin-top: 5rem;
     transition: box-shadow .2s
 }
 
