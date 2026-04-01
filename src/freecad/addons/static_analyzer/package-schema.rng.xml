@@ -12,7 +12,9 @@
       <rng:interleave>
         <rng:ref name="name" />
         <rng:ref name="version" />
-        <rng:ref name="date" />
+        <rng:optional>
+          <rng:ref name="date" />
+        </rng:optional>
         <rng:ref name="description" />
         <rng:oneOrMore>
           <rng:ref name="maintainer" />
