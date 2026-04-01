@@ -150,7 +150,7 @@ SPDX-FileNotice: Part of FreeCAD.
 
         {{ dependencies(item) }}
 
-        {% call comp.collapsible("Python Issues", item.total_issues) %}
+        {% call comp.collapsible("Static Analysis", item.total_issues) %}
             {{ issues_section(item, max_items_per_group) }}
         {% endcall %}
 
