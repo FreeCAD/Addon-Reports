@@ -59,7 +59,7 @@ jobs:
           # Copy reports from temp to root
           cp -a /tmp/reports/. .
           # Copy the newest report-*.html to index.html
-          newest_report=$(ls -t report-*.html 2>/dev/null | head -n1)
+          newest_report=$(ls -r -1 report-*.html 2>/dev/null | head -n1)
           if [ -n "$newest_report" ]; then
             # Determine if the report is from the first day of the month
             day_of_month=$(basename "$newest_report" .html | sed 's/^report-//' | cut -d'-' -f3)
