@@ -54,7 +54,10 @@ SPDX-FileNotice: Part of FreeCAD.
                 <i class="ti ti-package me-2"></i>{{ item.name }} <span class="badge bg-green-lt"
                     style="font-size: 0.5em;">{{ item.pkg_branch }}</span>
             </h3>
-            <h4 class="text-secondary">{{ ellipsis(item.pkg_description, default="No description") }}</h4>
+            <h4 class="text-secondary">
+                {% if item.pkg_version %}{{ item.pkg_version }}<span class="mx-2">&middot;</span>{% endif %}
+                {{ ellipsis(item.pkg_description, default="No description") }}
+            </h4>
         </div>
         <div class="card-actions d-flex align-items-center gap-2">
             <span class="badge bg-{{ item.score | score_color }} text-{{ item.score | score_color }}-fg fs-5 px-3 py-2">{{ item.score | fmt_float }} / 100</span>
@@ -154,7 +157,7 @@ SPDX-FileNotice: Part of FreeCAD.
             {{ issues_section(item, max_items_per_group) }}
         {% endcall %}
 
-        {% call comp.collapsible("Authors/Maintainers", item.pkg_people | length, icon="user") %}
+        {% call comp.collapsible("Authors/Maintainers", item.pkg_people | length, icon="user", open=item.pkg_people | length) %}
             {% for person in item.pkg_people %}
                 <span class="badge bg-blue text-blue-fg" style="margin-right: 1em;"><i class="ti ti-user me-2"></i>{{ person }}</span>
             {% endfor %}

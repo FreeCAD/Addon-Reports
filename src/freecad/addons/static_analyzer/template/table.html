@@ -4,8 +4,8 @@ SPDX-FileCopyrightText: 2026 Frank David Martínez Muñoz <mnesarco>
 SPDX-FileNotice: Part of FreeCAD.
 #}
 
-{% macro head(lbl, dt, idx, align="end") %}
-<th data-sort="{{idx}}" data-type="{{dt}}" class="text-{{align}}">{{lbl}}<span class="sort-icon"></span></th>
+{% macro head(lbl, dt, idx, align="end", tooltip="") %}
+<th data-sort="{{idx}}" data-type="{{dt}}" class="text-{{align}}" title="{{tooltip}}">{{lbl}}<span class="sort-icon"></span></th>
 {% endmacro %}
 
 <div class="card">
@@ -13,20 +13,20 @@ SPDX-FileNotice: Part of FreeCAD.
         <table class="table table-hover table-striped table-sm table-vcenter addons-table" id="addons-table">
             <thead>
                 <tr>
-                    {{ head("#", "number", 0, "start") }}
+                    {{ head("#", "number", 0, "start", "Rank by score") }}
                     {{ head("Addon", "string", 1, "start") }}
                     {{ head("Version", "string", 2, "end") }}
-                    {{ head("Score", "number", 3, "center") }}
+                    {{ head("Score", "number", 3, "center", "Static analysis score") }}
                     {{ head("High", "number", 4, "center") }}
                     {{ head("Med", "number", 5, "center") }}
                     {{ head("Low", "number", 6, "center") }}
                     {{ head("Updated", "string", 7) }}
-                    {{ head('<i class="ti ti-download"></i> 1yr', "number", 8) }}
-                    {{ head('<i class="ti ti-download"></i> 1mo', "number", 9) }}
-                    {{ head('<i class="ti ti-star"></i>', "number", 10, "center") }}
-                    {{ head('<i class="ti ti-bug"></i>', "number", 11, "center") }}
-                    {{ head('<i class="ti ti-git-fork"></i>', "number", 12, "center") }}
-                    {{ head("Files", "number", 13, "center") }}
+                    {{ head('<i class="ti ti-download"></i> 1yr', "number", 8, tooltip="Downloads from AddonManager (last 365 days)") }}
+                    {{ head('<i class="ti ti-download"></i> 1mo', "number", 9, tooltip="Downloads from AddonManager (last 30 days)") }}
+                    {{ head('<i class="ti ti-star"></i>', "number", 10, "center", "Github stars") }}
+                    {{ head('<i class="ti ti-bug"></i>', "number", 11, "center", "Github issues") }}
+                    {{ head('<i class="ti ti-git-fork"></i>', "number", 12, "center", "Github forks") }}
+                    {{ head("Files", "number", 13, "center", "Python files analyzed") }}
                     {{ head("Git Ref", "string", 14, "start") }}
                     {{ head("Label", "string", 15, "start") }}
                     {{ head("Tag", "string", 16, "start") }}
@@ -49,7 +49,7 @@ SPDX-FileNotice: Part of FreeCAD.
                     <td class="text-end">{{ rpt.pkg_version | default("-") }}</td>
 
                     <td data-value="{{ rpt.score }}" class="text-center"><span
-                            class="badge bg-{{color}} text-{{color}}-fg" style="width: 100%;">{{ rpt.score|fmt_float }}</span></td>
+                            class="badge bg-{{color}} text-{{color}}-fg ms-2" style="width: 100%;">{{ rpt.score|fmt_float }}</span></td>
                     <td data-value="{{ rpt.high }}" class="text-center">{{ severity_badge(rpt.high, "danger") }}</td>
                     <td data-value="{{ rpt.medium }}" class="text-center">{{ severity_badge(rpt.medium, "warning") }}</td>
                     <td data-value="{{ rpt.low }}" class="text-center">{{ severity_badge(rpt.low, "info") }}</td>

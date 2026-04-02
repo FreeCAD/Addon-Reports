@@ -239,7 +239,7 @@ details.issue-group[open] summary::before {
 }
 
 /* ── theme toggle ──────────────────────────────────────────────────────── */
-.theme-toggle {
+.header-button {
     background: none;
     border: 1px solid rgba(255, 255, 255, .25);
     color: #fff;
@@ -253,20 +253,25 @@ details.issue-group[open] summary::before {
     transition: border-color .2s, background .2s;
 }
 
-.theme-toggle:hover {
+a.header-button:hover {
+    color: #fff;
+    text-decoration: none;
+}
+
+.header-button:hover {
     border-color: rgba(255, 255, 255, .5);
     background: rgba(255, 255, 255, .08)
 }
 
-.theme-toggle .ti {
+.header-button .ti {
     font-size: 1.1rem
 }
 
-.theme-toggle .theme-label {
+.header-button .theme-label {
     font-weight: 500
 }
 
-[data-bs-theme=dark] .theme-toggle {
+[data-bs-theme=dark] .header-button {
     border-color: rgba(255, 255, 255, .2)
 }
 
@@ -292,3 +297,13 @@ details.issue-group[open] summary::before {
     }
 }
 
+[data-bs-theme="dark"] {
+  --tblr-link-color: #66b3ff; /* Lighter Blue */
+  --tblr-link-hover-color: #ffffff; /* White */
+}
+
+.addons-table .badge {
+  display: inline-flex;
+  align-items: center;
+  padding-top: 0.5em;
+}

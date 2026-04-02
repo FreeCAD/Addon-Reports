@@ -4,8 +4,8 @@ SPDX-FileCopyrightText: 2026 Frank David Martínez Muñoz <mnesarco>
 SPDX-FileNotice: Part of FreeCAD.
 #}
 
-{% macro collapsible(title, count=-1, icon="list-check", color="secondary", class="issue-group") %}
-    <details class="{{ class }} bg-secondary-lt">
+{% macro collapsible(title, count=-1, icon="list-check", color="secondary", class="issue-group", open=0) %}
+    <details class="{{ class }} bg-secondary-lt" {% if open > 0%}open{% endif %}>
         <summary>
             <i class="ti ti-{{ icon }} me-2"></i>{{ title }}
             {% if count >= 0 %}
