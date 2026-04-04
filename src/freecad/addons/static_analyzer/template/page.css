@@ -19,6 +19,8 @@ html {
 .dashboard-header {
     background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
     border-bottom: 3px solid var(--tblr-primary);
+    padding-top: .5rem;
+    padding-bottom: .5rem;
 }
 
 .dashboard-header .page-pretitle {
@@ -29,6 +31,23 @@ html {
 .dashboard-header .page-title
 {
     color: #fff;
+    width: 100%;
+}
+
+@media (max-width: 767.98px) {
+    .dashboard-header .row > [class*="col-12"] {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .dashboard-header .page-title {
+        font-size: 1.25rem;
+        justify-content: center !important;
+    }
+    .dashboard-header .page-pretitle {
+        padding: 0.2em;
+        text-align: center !important;
+    }
 }
 
 /* ── sortable table headers ───────────────────────────────────────────── */
