@@ -79,8 +79,8 @@ def _time_ago_filter(past_datetime: datetime | None) -> str:
 
 def _severity_badge(count: int, color: str) -> str:
     if count:
-        return f'<span class="badge bg-{color} text-{color}-fg">{count}</span>'
-    return '<span class="text-secondary">0</span>'
+        return f'<span class="badge bg-{color} text-{color}-fg" style="width: 3.5em;">{count}</span>'
+    return '<span class="text-secondary" style="width: 3.5em;">0</span>'
 
 
 def _ellipsis(text: str, max: int = 140, default: str = "") -> str:

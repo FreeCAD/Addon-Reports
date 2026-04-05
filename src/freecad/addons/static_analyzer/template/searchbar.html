@@ -6,20 +6,29 @@ SPDX-FileNotice: Part of FreeCAD.
 
 <div class="card mb-3">
     <div class="card-body py-3">
-    <div class="row align-items-center">
-        <div class="col-md-6">
-        <div class="input-icon">
-            <span class="input-icon-addon"><i class="ti ti-search"></i></span>
-            <input type="text" class="form-control" id="addon-search"
-                    placeholder="Search addons… (press / to focus)" autocomplete="off"/>
+        <div class="row align-items-center">
+            <div class="col-md-4">
+                <div class="input-icon">
+                    <span class="input-icon-addon"><i class="ti ti-search"></i></span>
+                    <input type="text" class="form-control" id="addon-search"
+                            placeholder="Search addons… (press / to focus)" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-start mt-2 mt-md-0">
+                <span class="text-secondary">
+                    Showing <strong id="visible-count">0</strong>
+                    of <strong id="total-count">0</strong> addons
+                </span>
+            </div>
+            <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                <div class="dropdown">
+                    <a href="#" class="btn" data-bs-toggle="dropdown"><i class="ti ti-eye"></i></a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#" id="show-all-columns">All columns</a>
+                        <a class="dropdown-item" href="#" id="show-main-columns">Main columns</a>
+                    </div>
+                </div>
+            </div>
         </div>
-        </div>
-        <div class="col-md-6 text-md-end mt-2 mt-md-0">
-        <span class="text-secondary">
-            Showing <strong id="visible-count">0</strong>
-            of <strong id="total-count">0</strong> addons
-        </span>
-        </div>
-    </div>
     </div>
 </div>

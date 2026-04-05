@@ -34,9 +34,25 @@ def clone_repo(repo_url: str, clone_path: str, branch: str) -> None:
         subprocess.run(cmd)
     else:
         print(f"Synching {repo_url} in {clone_path}")
-        subprocess.run(["git", "fetch", "origin", branch], cwd=clone_path)
         subprocess.run(
-            ["git", "reset", "--hard", f"origin/{branch}"], cwd=clone_path
+            [
+                "git",
+                "fetch",
+                "--depth=1",
+                "--force",
+                "origin",
+                branch,
+            ],
+            cwd=clone_path,
+        )
+        subprocess.run(
+            [
+                "git",
+                "reset",
+                "--hard",
+                f"origin/{branch}",
+            ],
+            cwd=clone_path,
         )
         subprocess.run(["git", "clean", "-fdx"], cwd=clone_path)
 
