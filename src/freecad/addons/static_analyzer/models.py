@@ -31,6 +31,7 @@ class Stats:
     open_issues: int = 0
     total_forks: int = 0
     subscribers: int = 0
+    created_at: str = ''
 
 
 @dataclass

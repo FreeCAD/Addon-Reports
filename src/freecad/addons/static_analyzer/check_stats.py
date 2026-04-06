@@ -112,3 +112,4 @@ def check_stats(analysis: Analysis, repo: Path) -> None:
         analysis.stats.stargazers = github.get("stargazers_count", 0)
         analysis.stats.open_issues = github.get("open_issues_count", 0)
         analysis.stats.subscribers = github.get("subscribers_count", 0)
+        analysis.stats.created_at = github.get("created_at", '')

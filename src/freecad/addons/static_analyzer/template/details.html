@@ -127,7 +127,11 @@ SPDX-FileNotice: Part of FreeCAD.
                         <i class="ti ti-tag me-1"></i>{{ item.tag }}
                         <span class="mx-2">&middot;</span>
                     {% endif %}
-                    <i class="ti ti-clock me-1"></i><span title="Last updated {{ item.updated }}">{{ item.updated | time_ago }}</span>
+                    {% if item.stats.created_at %}
+                    Created: <span>{{ item.stats.created_at[:10] }}</span>
+                    <span class="mx-2">&middot;</span>
+                    {% endif %}
+                    Updated: <span title="Last updated {{ item.updated }}">{{ item.updated | time_ago }}</span>
                     <span class="mx-2">&middot;</span>
                     <i class="ti ti-file-code me-1"></i>{{ item.files }} python files
                 </div>

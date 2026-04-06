@@ -36,6 +36,7 @@ SPDX-FileNotice: Part of FreeCAD.
                     {{ head("Git Ref", "string", 15, "start", advanced="1") }}
                     {{ head("Tag", "string", 16, "start", advanced="1") }}
                     {{ head("License", "string", 17, "start", advanced="1") }}
+                    {{ head("Created", "string", 18, tooltip="Github repository creation date") }}
                 </tr>
             </thead>
             <tbody>
@@ -71,6 +72,7 @@ SPDX-FileNotice: Part of FreeCAD.
                     <td>{{ rpt.git_ref | default("-") }}</td>
                     <td>{{ rpt.tag | default("-") }}</td>
                     <td>{{ ellipsis(rpt.pkg_license, 64) }}</td>
+                    <td data-value="{{ rpt.stats.created_at }}" class="text-end">{{ rpt.stats.created_at[:10] }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
