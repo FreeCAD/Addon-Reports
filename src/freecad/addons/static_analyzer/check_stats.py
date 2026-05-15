@@ -101,6 +101,10 @@ def check_stats(analysis: Analysis, repo: Path) -> None:
     elif count_30d := downloads_30d.get((analysis.name, analysis.git_ref)):
         analysis.stats.downloads_30d = count_30d.value
 
+    # matomo stats are not reliable beyond 30d if the addon age is less than 1yr
+    if analysis.stats.downloads_365d < analysis.stats.downloads_30d:
+        analysis.stats.downloads_365d = analysis.stats.downloads_30d
+
     github = github_data.get(analysis.git_repo)
     if not github:
         if analysis.git_repo.endswith(".git"):

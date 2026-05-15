@@ -120,5 +120,5 @@ def start():
     output_dir.mkdir(exist_ok=True)
 
     date = datetime.strftime(datetime.now(timezone.utc), "%Y-%m-%d")
-    reports.sort(key=lambda x: (-x.score, -x.stats.downloads_365d, x.name))
+    reports.sort(key=lambda x: (-x.score, -x.stats.downloads_30d, x.name))
     (output_dir / f"report-{date}.html").write_text(fmt.report(reports))
