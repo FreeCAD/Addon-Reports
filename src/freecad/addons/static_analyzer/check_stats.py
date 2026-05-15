@@ -91,10 +91,14 @@ def check_stats(analysis: Analysis, repo: Path) -> None:
     downloads_30d = _get_download_stats(30)
     github_data = _get_github_stats()
 
-    if count_365d := downloads_365d.get((analysis.name, analysis.git_ref)):
+    if count_365d := downloads_365d.get((analysis.name, analysis.git_branch_display)):
+        analysis.stats.downloads_365d = count_365d.value
+    elif count_365d := downloads_365d.get((analysis.name, analysis.git_ref)):
         analysis.stats.downloads_365d = count_365d.value
 
-    if count_30d := downloads_30d.get((analysis.name, analysis.git_ref)):
+    if count_30d := downloads_30d.get((analysis.name, analysis.git_branch_display)):
+        analysis.stats.downloads_30d = count_30d.value
+    elif count_30d := downloads_30d.get((analysis.name, analysis.git_ref)):
         analysis.stats.downloads_30d = count_30d.value
 
     github = github_data.get(analysis.git_repo)
