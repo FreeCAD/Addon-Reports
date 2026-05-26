@@ -64,6 +64,8 @@ CONSTRAINTS_FILES = {
     "constraints/constraints-py310.txt",
     "constraints.txt",
     "ALLOWED_PYTHON_PACKAGES.txt",
+    "Data/Python/3.10/Allowed-Packages",
+    "Data/Python/3.10/constraints.txt",
 }
 
 SEP = re.compile(r"[^a-zA-Z0-9_-]")
