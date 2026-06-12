@@ -30,9 +30,7 @@ def _xpath(doc, query: str, namespaces: dict[str, str] | None = None):
     if not namespaces:
         return doc.xpath(query)
     for prefix, ns in namespaces.items():
-        result = doc.xpath(
-            query.replace("%:", f"{prefix}:"), namespaces=namespaces
-        )
+        result = doc.xpath(query.replace("%:", f"{prefix}:"), namespaces=namespaces)
         if result:
             return result
     return doc.xpath(query.replace("%:", ""), namespaces=namespaces)
@@ -91,6 +89,51 @@ def _check_license(package, name: str, issues: list[Issue], repo: Path) -> str:
     return ", ".join(content)
 
 
+def _check_icon(package, name: str, issues: list[Issue], repo: Path) -> None:
+    namespaces = {"fcp": SCHEMA}
+    icons = _xpath(package, "/%:package//%:icon", namespaces=namespaces)
+    max_icon_size_kb = 16
+    max_icon_size = 1024 * max_icon_size_kb
+
+    if not icons:
+        issues.append(
+            Issue(
+                name,
+                0,
+                """Missing icon declaration""",
+            )
+        )
+        return
+
+    icon = icons[0]
+    file: Path = repo / icon.text
+    if not file.exists():
+        issues.append(
+            Issue(
+                name,
+                icon.sourceline,
+                f"""Missing icon file '{file!s}'""",
+            )
+        )
+    else:
+        if file.stat().st_size > max_icon_size:
+            issues.append(
+                Issue(
+                    name,
+                    icon.sourceline,
+                    f"""Icon file '{file!s}' is too big (>{max_icon_size_kb}kB)""",
+                )
+            )
+        if file.suffix.lower() not in (".svg", ".svgz"):
+            issues.append(
+                Issue(
+                    name,
+                    icon.sourceline,
+                    f"""Icon file '{file!s}' is not scalable (svg)""",
+                )
+            )
+
+
 def _check_version(package, name: str, issues: list[Issue], repo: Path) -> str:
     namespaces = {"fcp": SCHEMA}
     version = _xpath(package, "/%:package/%:version", namespaces=namespaces)
@@ -106,9 +149,7 @@ def _check_version(package, name: str, issues: list[Issue], repo: Path) -> str:
     return version[0].text
 
 
-def _check_people(
-    package, name: str, issues: list[Issue], repo: Path
-) -> list[str]:
+def _check_people(package, name: str, issues: list[Issue], repo: Path) -> list[str]:
     namespaces = {"fcp": SCHEMA}
     people = []
 
@@ -124,9 +165,7 @@ def _check_people(
     else:
         people = [e.text for e in authors]
 
-    maintainers = _xpath(
-        package, "/%:package/%:maintainer", namespaces=namespaces
-    )
+    maintainers = _xpath(package, "/%:package/%:maintainer", namespaces=namespaces)
     if not maintainers:
         issues.append(
             Issue(
@@ -216,6 +255,13 @@ def check_package(analysis: Analysis, repo: Path) -> Meta:
         package,
         package_xml.name,
         analysis.issues["INFO"],
+        repo,
+    )
+
+    _check_icon(
+        package,
+        package_xml.name,
+        analysis.issues["LOW"],
         repo,
     )
 
