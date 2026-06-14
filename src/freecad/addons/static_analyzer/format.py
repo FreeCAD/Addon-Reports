@@ -18,12 +18,11 @@ def report(reports: list[Analysis]) -> str:
     """Assemble the final standalone HTML page."""
 
     title = "FreeCAD Addons Report"
-    time_str = datetime.strftime(
-        datetime.now(timezone.utc), "%Y-%m-%d %H:%M:%S %Z"
-    )
+    time_str = datetime.strftime(datetime.now(timezone.utc), "%Y-%m-%d %H:%M:%S %Z")
 
     total = len(reports)
     avg_score = sum(r.score for r in reports) / total if total else 0
+    total_base_addons = len(set(r.name for r in reports))
 
     data = {
         "title": title,
@@ -32,7 +31,7 @@ def report(reports: list[Analysis]) -> str:
         "max_items_per_group": 20,
         "avg_score": avg_score,
         "total_files": sum(r.files for r in reports),
-        "total_addons": total,
+        "total_addons": total_base_addons,
         "total_high": sum(r.high for r in reports),
         "total_medium": sum(r.medium for r in reports),
         "total_dl_y": sum(r.stats.downloads_365d for r in reports),
