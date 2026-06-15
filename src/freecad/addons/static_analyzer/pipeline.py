@@ -8,8 +8,8 @@ Main process pipeline.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
 import re
+from datetime import datetime, timezone
 from pathlib import Path
 from threading import Thread
 
@@ -20,9 +20,9 @@ from .check_layout import check_layout
 from .check_package import check_package
 from .check_rules import check_rules
 from .check_stats import check_stats
+from .config import Config
 from .extract_deps import repo_requirements
 from .models import Analysis, Issue
-from .config import Config
 
 
 def search_files(base: Path, name: str, *, regex: bool = False) -> list[Path]:
@@ -37,11 +37,7 @@ def search_files(base: Path, name: str, *, regex: bool = False) -> list[Path]:
 
     pattern = re.compile(name, re.IGNORECASE)
 
-    return [
-        p
-        for p in base.rglob("*")
-        if pattern.fullmatch(str(p.relative_to(base)))
-    ]
+    return [p for p in base.rglob("*") if pattern.fullmatch(str(p.relative_to(base)))]
 
 
 def check_file_present(
@@ -122,3 +118,4 @@ def start():
     date = datetime.strftime(datetime.now(timezone.utc), "%Y-%m-%d")
     reports.sort(key=lambda x: (-x.score, -x.stats.downloads_30d, x.name))
     (output_dir / f"report-{date}.html").write_text(fmt.report(reports))
+    (output_dir / f"report-{date}.json").write_text(fmt.report_json(reports))

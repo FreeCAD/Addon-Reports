@@ -112,7 +112,7 @@ def _check_icon(package, name: str, issues: list[Issue], repo: Path) -> None:
             Issue(
                 name,
                 icon.sourceline,
-                f"""Missing icon file '{file!s}'""",
+                f"""Missing icon file '{icon.text}'""",
             )
         )
     else:
@@ -121,7 +121,7 @@ def _check_icon(package, name: str, issues: list[Issue], repo: Path) -> None:
                 Issue(
                     name,
                     icon.sourceline,
-                    f"""Icon file '{file!s}' is too big (>{max_icon_size_kb}kB)""",
+                    f"""Icon file '{icon.text}' is too big (>{max_icon_size_kb}kB)""",
                 )
             )
         if file.suffix.lower() not in (".svg", ".svgz"):
@@ -129,7 +129,7 @@ def _check_icon(package, name: str, issues: list[Issue], repo: Path) -> None:
                 Issue(
                     name,
                     icon.sourceline,
-                    f"""Icon file '{file!s}' is not scalable (svg)""",
+                    f"""Icon file '{icon.text}' is not scalable (svg)""",
                 )
             )
 

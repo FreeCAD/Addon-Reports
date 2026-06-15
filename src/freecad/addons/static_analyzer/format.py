@@ -8,10 +8,30 @@ FreeCAD Addon Analysis Report — Tabler Dashboard Generator.
 
 from __future__ import annotations
 
+import json
+from collections import defaultdict
+from dataclasses import fields, is_dataclass
 from datetime import datetime, timezone
+from itertools import groupby
 
 from . import template
 from .models import Analysis
+
+
+def serialize(data: object) -> object:
+    if is_dataclass(data):
+        return {f.name: serialize(getattr(data, f.name)) for f in fields(data)}
+    match data:
+        case str() | int() | float():
+            return data
+        case list() | tuple():
+            return [serialize(v) for v in data]
+        case dict() | defaultdict():
+            return {k: serialize(v) for k, v in data.items()}
+        case datetime():
+            return data.isoformat()
+        case _:
+            return str(data)
 
 
 def report(reports: list[Analysis]) -> str:
@@ -39,3 +59,15 @@ def report(reports: list[Analysis]) -> str:
     }
 
     return template.page_html.render(data)
+
+
+def report_json(reports: list[Analysis]) -> str:
+    """Dump report data as json"""
+    reports.sort(key=lambda x: x.name)
+    data = {
+        "date": datetime.strftime(datetime.now(timezone.utc), "%Y-%m-%d"),
+        "addons": {
+            name: list(items) for name, items in groupby(reports, lambda r: r.name)
+        },
+    }
+    return json.dumps(serialize(data), indent=2)
