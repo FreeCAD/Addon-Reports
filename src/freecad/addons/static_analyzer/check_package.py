@@ -60,7 +60,6 @@ def _check_repository(
         for url in repository:
             branch = url.get("branch")
             if not url.get("branch"):
-                print(str(repo), dir(url))
                 issues.append(
                     Issue(
                         name,

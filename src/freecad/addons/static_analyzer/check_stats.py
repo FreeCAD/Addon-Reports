@@ -8,9 +8,9 @@ Fetch and get all stats from matomo and github.
 
 from __future__ import annotations
 
-import datetime
+import calendar
 import re
-from collections import defaultdict
+from datetime import date, timedelta
 from pathlib import Path
 from typing import Any, cast
 
@@ -25,58 +25,83 @@ _matomo_label_pattern = re.compile(
 )
 
 
-class _Count:
-    def __init__(self) -> None:
-        self.value = 0
+def _get_month_range(period: str = "current") -> tuple[str, str]:
+    """
+    Returns start and end dates in YYYY-MM-DD format.
+    """
+    today = date.today()
 
-    def add(self, value: int) -> None:
-        self.value += value
+    if period == "last_month":
+        # Calculate previous month and year
+        prev_month = 12 if today.month == 1 else today.month - 1
+        prev_year = today.year - 1 if today.month == 1 else today.year
+
+        start_date = date(prev_year, prev_month, 1)
+        end_date = date(
+            prev_year, prev_month, calendar.monthrange(prev_year, prev_month)[1]
+        )
+
+    elif period == "last_12_months":
+        # 12 full calendar months ending today's month (e.g., Sep 1, 2025 - Aug 31, 2026)
+        start_month = (today.month % 12) + 1
+        start_year = today.year if today.month == 12 else today.year - 1
+
+        start_date = date(start_year, start_month, 1)
+        end_date = date(
+            today.year,
+            today.month,
+            calendar.monthrange(today.year, today.month)[1],
+        )
+
+    elif period == "last30":
+        start_date = today - timedelta(days=30)
+        end_date = today
+
+    elif period == "last365":
+        start_date = today - timedelta(days=365)
+        end_date = today
+
+    else:  # 'current'
+        start_date = today.replace(day=1)
+        end_date = today.replace(
+            day=calendar.monthrange(today.year, today.month)[1]
+        )
+
+    return start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d")
 
 
 def _get_data(url: str, **params) -> Any:
     with httpx.Client() as client:
-        response = client.get(url, params=params)
+        response = client.get(url, params=params, timeout=15.0)
         response.raise_for_status()
         return response.json()
 
 
-def _date_range(days: int = 30) -> str:
-    end = datetime.date.today()
-    start = end - datetime.timedelta(days=days)
-    date_range = f"{start.strftime('%Y-%m-%d')},{end.strftime('%Y-%m-%d')}"
-    return date_range
-
-
-@thread_safe_cache
-def _get_download_stats(days: int) -> dict[tuple[str, str], _Count]:
-    data = cast(
-        list[dict[str, Any]],
-        _get_data(
+def _get_addon_downloads(name: str, branch: str, start: str, end: str) -> int:
+    try:
+        data = _get_data(
             Config.matomo_stats_endpoint,
-            period="range",
-            date=_date_range(days),
+            period="month",
+            date=f"{start},{end}",
             module="API",
             format="JSON",
             idSite="1",
             method="Actions.getDownloads",
-            expanded="1",
+            label=f"addons.freecad.org > /CatalogCache/{name}/0-{branch}.zip",
+            format_metrics=0,
+            expanded=1,
             showMetadata="0",
             filter_limit="-1",
-        ),
-    )
-
-    stats: dict[tuple[str, str], _Count] = defaultdict(_Count)
-
-    for item in data[0].get("subtable", []):
-        label = item.get("label")
-        if not label:
-            continue
-        if match := _matomo_label_pattern.match(label):
-            addon = match.group("addon")
-            branch = match.group("branch")
-            stats[(addon, branch)].add(cast(int, item.get("nb_hits", 0)))
-
-    return stats
+            disable_generic_filters="1",
+        )
+    except Exception:
+        return 0
+    else:
+        total = 0
+        for period in data.values():
+            for row in period:
+                total += int(row["nb_hits"])
+        return total
 
 
 @thread_safe_cache
@@ -87,24 +112,34 @@ def _get_github_stats() -> dict[str, dict[str, int]]:
 
 
 def check_stats(analysis: Analysis, repo: Path) -> None:
-    downloads_365d = _get_download_stats(365)
-    downloads_30d = _get_download_stats(30)
+    start, end = _get_month_range("last30")
+    last30 = _get_addon_downloads(
+        analysis.name,
+        analysis.git_ref,
+        start,
+        end,
+    )
+    if not last30:
+        last30 = _get_addon_downloads(
+            analysis.name,
+            analysis.git_branch_display,
+            start,
+            end,
+        )
+    start, end = _get_month_range("last365")
+    last365 = _get_addon_downloads(analysis.name, analysis.git_ref, start, end)
+    if not last365:
+        last365 = _get_addon_downloads(
+            analysis.name,
+            analysis.git_branch_display,
+            start,
+            end,
+        )
+
+    analysis.stats.downloads_30d = last30
+    analysis.stats.downloads_365d = last365
+
     github_data = _get_github_stats()
-
-    if count_365d := downloads_365d.get((analysis.name, analysis.git_branch_display)):
-        analysis.stats.downloads_365d = count_365d.value
-    elif count_365d := downloads_365d.get((analysis.name, analysis.git_ref)):
-        analysis.stats.downloads_365d = count_365d.value
-
-    if count_30d := downloads_30d.get((analysis.name, analysis.git_branch_display)):
-        analysis.stats.downloads_30d = count_30d.value
-    elif count_30d := downloads_30d.get((analysis.name, analysis.git_ref)):
-        analysis.stats.downloads_30d = count_30d.value
-
-    # matomo stats are not reliable beyond 30d if the addon age is less than 1yr
-    if analysis.stats.downloads_365d < analysis.stats.downloads_30d:
-        analysis.stats.downloads_365d = analysis.stats.downloads_30d
-
     github = github_data.get(analysis.git_repo)
     if not github:
         if analysis.git_repo.endswith(".git"):
@@ -112,7 +147,7 @@ def check_stats(analysis: Analysis, repo: Path) -> None:
             github = github_data.get(repo_url)
         else:
             repo_url = f"{analysis.git_repo}.git"
-            github= github_data.get(repo_url)
+            github = github_data.get(repo_url)
 
     if github:
         analysis.stats.direct_forks = github.get("forks_count", 0)
@@ -120,4 +155,4 @@ def check_stats(analysis: Analysis, repo: Path) -> None:
         analysis.stats.stargazers = github.get("stargazers_count", 0)
         analysis.stats.open_issues = github.get("open_issues_count", 0)
         analysis.stats.subscribers = github.get("subscribers_count", 0)
-        analysis.stats.created_at = github.get("created_at", '')
+        analysis.stats.created_at = github.get("created_at", "")
