@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FreeCAD Addons · Quality Trend Dashboard</title>
+<style>
+:root{
+  --bg:#0b0e14; --bg2:#0f131c; --panel:#141926; --panel2:#1a2132;
+  --border:#242c3f; --border2:#2e3850;
+  --text:#e8ecf4; --muted:#8b94a9; --faint:#5b6478;
+  --accent:#7c6cff; --accent-soft:rgba(124,108,255,.14);
+  --stat:#22d3ee; --stat-soft:rgba(34,211,238,.12);
+  --high:#ff5d76; --high-soft:rgba(255,93,118,.16);
+  --med:#ffb224; --med-soft:rgba(255,178,36,.15);
+  --low:#3fa7ff; --low-soft:rgba(63,167,255,.15);
+  --good:#2fd18c; --good-soft:rgba(47,209,140,.14);
+  --bad:#ff5d76;
+  --grid:rgba(139,148,169,.14);
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+[data-theme="light"]{
+  --bg:#f3f5fa; --bg2:#eef1f7; --panel:#ffffff; --panel2:#f6f8fc;
+  --border:#dfe4ee; --border2:#cbd3e1;
+  --text:#1c2333; --muted:#5c667c; --faint:#98a1b3;
+  --accent-soft:rgba(124,108,255,.12);
+  --shadow:0 8px 24px rgba(28,35,51,.08);
+  --grid:rgba(92,102,124,.18);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(1100px 500px at 80% -10%, var(--accent-soft), transparent 60%),
+    radial-gradient(900px 420px at 5% -5%, var(--stat-soft), transparent 55%),
+    var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:15px; line-height:1.45; min-height:100vh;
+}
+.wrap{max-width:1280px;margin:0 auto;padding:20px 20px 60px}
+header.top{display:flex;align-items:center;gap:16px;padding:18px 4px 14px;flex-wrap:wrap}
+.logo{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#4aa8ff);box-shadow:var(--shadow)}
+.logo svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.titles h1{margin:0;font-size:1.25rem;font-weight:700;letter-spacing:.2px}
+.titles p{margin:2px 0 0;color:var(--muted);font-size:.85rem}
+.spacer{flex:1}
+.badge-info-excluded{display:inline-flex;align-items:center;gap:6px;font-size:.75rem;font-weight:600;color:var(--good);background:var(--good-soft);border:1px solid rgba(47,209,140,.35);padding:4px 10px;border-radius:999px}
+button.theme{background:var(--panel);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:8px 12px;cursor:pointer;font-size:.85rem;display:inline-flex;align-items:center;gap:8px;transition:border-color .15s}
+button.theme:hover{border-color:var(--border2)}
+
+.card{background:var(--panel);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow)}
+.controls{display:flex;flex-wrap:wrap;align-items:end;gap:14px;padding:16px;margin-bottom:18px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:600}
+input[type=date]{background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:8px 10px;font:inherit;font-size:.9rem;color-scheme:dark}
+[data-theme=light] input[type=date]{color-scheme:light}
+.presets{display:flex;gap:6px;flex-wrap:wrap}
+.presets button{background:var(--panel2);border:1px solid var(--border);color:var(--muted);border-radius:999px;padding:7px 14px;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .15s}
+.presets button:hover{color:var(--text);border-color:var(--border2)}
+.presets button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.range-note{color:var(--faint);font-size:.8rem;margin-left:auto}
+
+.progress{position:relative;height:5px;border-radius:99px;background:var(--panel2);overflow:hidden;margin:-8px 0 18px;border:1px solid var(--border)}
+.progress .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--stat));transition:width .2s;border-radius:99px}
+.progress-text{font-size:.78rem;color:var(--muted);margin:0 4px 14px}
+
+.section-head{display:flex;align-items:center;gap:10px;margin:26px 4px 12px}
+.section-head .dot{width:10px;height:10px;border-radius:3px}
+.section-head h2{margin:0;font-size:1.02rem;font-weight:700;letter-spacing:.3px;text-transform:uppercase;font-size:.85rem;color:var(--muted)}
+.section-head .hint{color:var(--faint);font-size:.78rem;margin-left:auto}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.kpi{padding:16px 16px 14px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--kc,var(--accent))}
+.kpi .k-label{font-size:.74rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:600}
+.kpi .k-value{font-size:1.7rem;font-weight:750;margin-top:6px;font-variant-numeric:tabular-nums}
+.kpi .k-delta{display:inline-flex;align-items:center;gap:4px;margin-top:8px;font-size:.78rem;font-weight:700;padding:3px 9px;border-radius:999px}
+.k-delta.good{color:var(--good);background:var(--good-soft)}
+.k-delta.bad{color:var(--bad);background:var(--high-soft)}
+.k-delta.flat{color:var(--muted);background:var(--panel2)}
+
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:900px){.charts{grid-template-columns:1fr}}
+.chart-card{padding:16px 14px 8px}
+.chart-card h3{margin:0 4px 4px;font-size:.88rem;font-weight:650}
+.chart-card .sub{color:var(--faint);font-size:.76rem;margin:0 4px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin:2px 4px 6px}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-size:.76rem;color:var(--muted)}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.chart-box{position:relative;width:100%}
+.chart-box svg{display:block;width:100%}
+.tooltip{position:absolute;pointer-events:none;background:var(--panel2);border:1px solid var(--border2);border-radius:10px;padding:8px 11px;font-size:.78rem;box-shadow:var(--shadow);opacity:0;transition:opacity .1s;z-index:5;white-space:nowrap}
+.tooltip .t-date{font-weight:700;margin-bottom:4px}
+.tooltip .t-row{display:flex;align-items:center;gap:7px;color:var(--muted)}
+.tooltip .t-row b{color:var(--text);margin-left:auto;font-variant-numeric:tabular-nums;padding-left:14px}
+
+.movers{padding:16px;margin-top:14px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.chip{display:inline-flex;align-items:center;gap:7px;font-size:.8rem;font-weight:600;padding:5px 12px;border-radius:999px;border:1px solid var(--border)}
+.chip b{font-variant-numeric:tabular-nums}
+.chip.fixed{color:var(--good);background:var(--good-soft);border-color:rgba(47,209,140,.35)}
+.chip.introduced{color:var(--bad);background:var(--high-soft);border-color:rgba(255,93,118,.3)}
+.chip.net{color:var(--text);background:var(--panel2)}
+.filters{display:flex;gap:6px;margin-left:auto}
+.filters button{background:var(--panel2);border:1px solid var(--border);color:var(--muted);border-radius:999px;padding:5px 13px;font-size:.78rem;font-weight:600;cursor:pointer}
+.filters button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.84rem}
+th{color:var(--muted);text-align:right;font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.6px;padding:9px 12px;border-bottom:1px solid var(--border);white-space:nowrap;user-select:none}
+th.sortable{cursor:pointer}
+th.sortable:hover{color:var(--text)}
+th.sorted{color:var(--accent)}
+td{padding:8px 12px;border-bottom:1px solid var(--border);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--panel2)}
+th:first-child,td:first-child{text-align:left}
+.addon-cell{max-width:260px;overflow:hidden;text-overflow:ellipsis}
+.addon-cell a{color:var(--text);text-decoration:none;font-weight:600}
+.addon-cell a:hover{color:var(--accent)}
+.ref{color:var(--faint);font-size:.74rem;margin-left:7px}
+.d-pos{color:var(--bad);font-weight:700}
+.d-neg{color:var(--good);font-weight:700}
+.d-zero{color:var(--faint)}
+.empty{color:var(--faint);text-align:center;padding:28px 0}
+tr.unchanged-toggle td{color:var(--faint);font-size:.78rem;cursor:pointer}
+tr.unchanged-toggle:hover td{color:var(--text)}
+
+.minis{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:14px}
+
+.incardsel{margin-left:auto;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:4px 8px;font-size:.78rem}
+.bars-box{display:flex;flex-direction:column;gap:7px;padding:8px 6px 12px}
+.bar-row{display:grid;grid-template-columns:minmax(80px,32%) 1fr auto;align-items:center;gap:8px;font-size:.76rem;color:var(--muted)}
+.bar-row .bl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right}
+.bar-track{display:block;background:var(--panel2);border-radius:99px;height:11px;overflow:hidden}
+.bar-fill{display:block;height:100%;border-radius:99px}
+.bar-val{font-variant-numeric:tabular-nums;min-width:4ch;text-align:right;color:var(--text);font-size:.75rem}
+.caption{color:var(--faint);font-size:.78rem;margin:6px 6px 0}
+.event-row{display:flex;flex-wrap:wrap;gap:6px 14px;padding:8px 6px;border-bottom:1px solid var(--border);font-size:.82rem;align-items:baseline}
+.event-row:last-child{border-bottom:none}
+.ev-date{color:var(--faint);font-size:.75rem;min-width:86px;font-variant-numeric:tabular-nums}
+.ev-names{color:var(--muted);font-size:.78rem}
+footer{margin-top:34px;color:var(--faint);font-size:.78rem;line-height:1.7}
+footer code{background:var(--panel2);border:1px solid var(--border);padding:1px 6px;border-radius:6px;font-size:.72rem}
+.error-banner{display:none;background:var(--high-soft);border:1px solid rgba(255,93,118,.4);color:var(--text);border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:.86rem}
+.skeleton .k-value,.skeleton .k-delta{opacity:.25}
+@media print{.controls,button.theme{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="logo"><svg viewBox="0 0 24 24"><path d="M4 19V9m5 10V5m5 14v-7m5 7V8"/></svg></div>
+  <div class="titles">
+    <h1>FreeCAD Addons · Quality Trend Dashboard</h1>
+    <p>Daily static-analysis reports · freecad.github.io/Addon-Reports</p>
+  </div>
+  <div class="spacer"></div>
+  <span class="badge-info-excluded">INFO issues excluded from all metrics</span>
+  <button class="theme" id="themeBtn">◐ Theme</button>
+</header>
+
+<div class="error-banner" id="errBanner"></div>
+
+<div class="card controls">
+  <div class="field">
+    <label>Date range</label>
+    <div class="presets" id="presets"></div>
+  </div>
+  <div class="field">
+    <label for="fromDate">From</label>
+    <input type="date" id="fromDate">
+  </div>
+  <div class="field">
+    <label for="toDate">To</label>
+    <input type="date" id="toDate">
+  </div>
+  <span class="range-note" id="rangeNote"></span>
+</div>
+
+<div class="progress" id="progressWrap" style="visibility:hidden"><div class="bar" id="progressBar"></div></div>
+<p class="progress-text" id="progressText"></p>
+
+<section>
+  <div class="section-head">
+    <span class="dot" style="background:var(--accent)"></span><h2>Quality Issues</h2>
+    <span class="hint">HIGH · MEDIUM · LOW only — INFO ignored</span>
+  </div>
+  <div class="kpis" id="qualityKpis"></div>
+  <div class="charts">
+    <div class="card chart-card">
+      <h3>Issues over time</h3>
+      <p class="sub" id="sevSub">Open issue counts per severity across all addons (weighted total overlaid)</p>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div class="legend" id="sevLegend"></div>
+        <select id="issueScope" class="incardsel" title="Count issues from first-party code only, vendored bundles only, or everything">
+          <option value="all">Scope: all code</option>
+          <option value="fp">First-party only</option>
+          <option value="ven">Vendored only</option>
+        </select>
+      </div>
+      <div class="chart-box" id="chartSev"></div>
+    </div>
+    <div class="card chart-card">
+      <h3>Quality Index</h3>
+      <p class="sub">Per addon: 100 − 11·ln(1 + 10·High + 1·Medium + 0.1·Low), floored at 0 — each ×2 in load costs ~7.6 pts</p>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div class="legend" id="qiLegend"></div>
+        <select id="qiMode" class="incardsel">
+          <option value="mean">Mean — all addons equal</option>
+          <option value="weighted">Severity-weighted — worst-first</option>
+        </select>
+      </div>
+      <div class="chart-box" id="chartQi"></div>
+    </div>
+  </div>
+  <div class="charts">
+    <div class="card chart-card">
+      <h3>Score distribution</h3>
+      <p class="sub">Share of addons per Quality Index band — means can hide a bimodal ecosystem</p>
+      <div class="legend" id="distLegend"></div>
+      <div class="chart-box" id="chartDist"></div>
+    </div>
+    <div class="card chart-card">
+      <h3>Most Issues</h3>
+      <p class="sub">Heaviest weighted issue loads at the end of the selected range</p>
+      <p class="caption" id="paretoCap"></p>
+      <div class="bars-box" id="paretoBox"></div>
+    </div>
+  </div>
+  <div class="charts">
+    <div class="card chart-card">
+      <h3>Top issue types</h3>
+      <p class="sub">Most frequent analyzer findings at the end of the range (texts normalized)</p>
+      <div class="bars-box" id="taxBars"></div>
+    </div>
+    <div class="card chart-card">
+      <h3>Issue type trends</h3>
+      <p class="sub">The 5 most common finding types over time</p>
+      <div class="legend" id="taxTrendLegend"></div>
+      <div class="chart-box" id="taxTrend"></div>
+    </div>
+  </div>
+  <div class="card movers">
+    <h3 style="margin:0 4px 10px;font-size:.95rem">Improvements over time</h3>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px">
+      <div class="chips" id="improveChips"></div>
+      <div class="filters" id="moverFilters">
+        <button data-f="all" class="active">All</button>
+        <button data-f="improved">Improved</button>
+        <button data-f="regressed">Regressed</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table id="moversTable">
+        <thead><tr>
+          <th>Addon</th>
+          <th class="sortable" data-k="dh">Δ High</th>
+          <th class="sortable" data-k="dm">Δ Med</th>
+          <th class="sortable" data-k="dl">Δ Low</th>
+          <th class="sortable" data-k="wdelta">Δ Weighted</th>
+          <th class="sortable" data-k="qi0">Start QI</th>
+          <th class="sortable" data-k="qi1">End QI</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-head">
+    <span class="dot" style="background:var(--stat)"></span><h2>Ecosystem Stats</h2>
+    <span class="hint">Popularity &amp; activity — independent of quality metrics</span>
+  </div>
+  <div class="kpis" id="statsKpis"></div>
+  <div class="minis" id="statMinis"></div>
+</section>
+
+<section>
+  <div class="section-head">
+    <span class="dot" style="background:var(--good)"></span><h2>Ecosystem Health</h2>
+    <span class="hint">Maintenance &amp; structure — is the ecosystem alive and evolving?</span>
+  </div>
+  <div class="kpis" id="healthKpis"></div>
+  <div class="charts">
+    <div class="card chart-card">
+      <h3>Maintenance staleness</h3>
+      <p class="sub">Share of addons by time since last commit (from the report's updated field)</p>
+      <div class="legend" id="staleLegend"></div>
+      <div class="chart-box" id="chartStale"></div>
+    </div>
+    <div class="card chart-card">
+      <h3>Most required dependencies</h3>
+      <p class="sub">requirements entries across all addons at the end of the range</p>
+      <div class="bars-box" id="depBars"></div>
+    </div>
+  </div>
+  <div class="card movers">
+    <h3 style="margin:0 4px 10px;font-size:.95rem">Addon lifecycle events</h3>
+    <p class="sub" style="color:var(--faint);font-size:.78rem;margin:0 4px 8px">Addons entering or leaving the tracked ecosystem between consecutive reports — explains sudden jumps in other charts.</p>
+    <div id="lifecycleList"></div>
+  </div>
+</section>
+
+<footer>
+  <div>Sources: <code>https://freecad.github.io/Addon-Reports/report-&lt;date&gt;.json</code> · reports are probed daily from <b>2026-06-15</b> onward and cached in-memory per session. Missing dates are skipped.</div>
+  <div>Weighted load = <code>10·HIGH + 1·MEDIUM + 0.1·LOW</code> (HIGH weighs 10× MEDIUM, MEDIUM weighs 10× LOW). Per-addon Quality Index = <code>max(0, 100 − 11·ln(1 + load))</code> — logarithmic so no saturation; halving an addon's weighted load always earns the same points. The headline index is the mean across addons (optionally severity-weighted, see chart selector).</div>
+  <div>Vendored code = paths matching <code>/vendor/ · /libs/ · /site-packages/ · /third-party/ …</code>; the scope selector on "Issues over time" counts only first-party or only vendored findings. Issue-type keys normalize texts (lowercase, digits → #). Staleness uses each entry's last-commit timestamp. Category <code>INFO</code> is excluded from every metric, delta and chart on this page. Serve this file over HTTP(S) (e.g. <code>python3 -m http.server</code>) — browsers block <code>fetch()</code> from <code>file://</code>.</div>
+</footer>
+
+</div>
+
+<script>
+"use strict";
+/* ─── CONFIG ─────────────────────────────────────────────────────────── */
+const qsParams = typeof location !== "undefined" ? new URLSearchParams(location.search) : new URLSearchParams();
+const BASE_URL = (qsParams.get("base") || "https://freecad.github.io/Addon-Reports/").replace(/\/*$/, "/");
+const FIRST_DATE = "2026-06-15";
+const W_HIGH = 10, W_MED = 1, W_LOW = 0.1;
+const K_LOG = 11;
+const TAXONOMY_TOP = 12;
+const VENDOR_RE = /(^|\/)(vendor|vendors|libs|lib|site-packages|third[_-]?party|3rd[_-]?party|external|deps)(\/|$)/i;
+
+const SEV = [
+  { key: "HIGH",   field: "h", colorVar: "--high", label: "High" },
+  { key: "MEDIUM", field: "m", colorVar: "--med",  label: "Medium" },
+  { key: "LOW",    field: "l", colorVar: "--low",  label: "Low" }
+];
+const QI_BANDS = [
+  { max: 25,  colorVar: "--bad",    label: "QI 0–25" },
+  { max: 50,  colorVar: "--med",    label: "QI 26–50" },
+  { max: 75,  colorVar: "--accent", label: "QI 51–75" },
+  { max: 100, colorVar: "--good",   label: "QI 76–100" }
+];
+const STALE_BUCKETS = [
+  { colorVar: "--good",   label: "Fresh <3mo" },
+  { colorVar: "--med",    label: "Aging 3–12mo" },
+  { colorVar: "--high",   label: "Stale >1yr" }
+];
+const TREND_PALETTE = ["--accent", "--stat", "--med", "--low", "--good"];
+
+const cache = new Map();
+const state = { available: [], from: null, to: null, loading: false,
+  moverFilter: "all", sortKey: "wdelta", sortDir: 1,
+  showUnchanged: qsParams.get("unchanged") === "1",
+  qiMode: qsParams.get("qi") === "weighted" ? "weighted" : "mean",
+  issueScope: ["fp", "ven"].includes(qsParams.get("scope")) ? qsParams.get("scope") : "all" };
+
+const $ = s => document.querySelector(s);
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const fmtFull = n => Math.round(n).toLocaleString("en-US");
+const fmtCompact = n => {
+  if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(n % 1e6 ? 1 : 0) + "M";
+  if (Math.abs(n) >= 1000) return (n / 1000).toFixed(Math.abs(n) >= 1e4 ? 0 : 1) + "k";
+  return String(Math.round(n * 10) / 10);
+};
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const parseD = s => { const [y,m,d] = s.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d)); };
+const fmtDay = d => MON[d.getUTCMonth()] + " " + d.getUTCDate();
+const fmtISO = d => d.toISOString().slice(0, 10);
+const todayISO = () => fmtISO(new Date());
+function addDays(iso, n){ const d = parseD(iso); d.setUTCDate(d.getUTCDate() + n); return fmtISO(d); }
+
+/* ─── AGGREGATION ────────────────────────────────────────────────────── */
+
+function fmtDelta(n){
+  return Number.isInteger(n) ? fmtFull(n) : n.toFixed(1);
+}
+
+function weighted(h, m, l){ return h * W_HIGH + m * W_MED + l * W_LOW; }
+
+function isVendoredPath(subject){ return VENDOR_RE.test(subject || ""); }
+
+function normIssueKey(text){
+  return text.toLowerCase().replace(/[0-9]+/g, "#").replace(/[^a-z#\s]/g, " ")
+    .replace(/\s+/g, " ").trim().slice(0, 90);
+}
+
+function qiAggregate(s){
+  if (!s.addons) return 0;
+  if (state.qiMode === "weighted"){
+    const wSum = s.perAddon.reduce((a, r) => a + r.w, 0);
+    if (wSum) return s.perAddon.reduce((a, r) => a + r.qi * r.w, 0) / wSum;
+  }
+  return s.perAddon.reduce((a, r) => a + r.qi, 0) / s.addons;
+}
+
+function percentile(sortedVals, p){
+  if (!sortedVals.length) return 0;
+  const i = (sortedVals.length - 1) * p / 100;
+  const lo = Math.floor(i), hi = Math.ceil(i);
+  return sortedVals[lo] + (sortedVals[hi] - sortedVals[lo]) * (i - lo);
+}
+
+function summarize(report){
+  const out = { date: report.date || null, addons: 0, files: 0,
+    h: 0, m: 0, l: 0, downloads365: 0, downloads30: 0, stars: 0, forks: 0, openIssues: 0,
+    fp: { h: 0, m: 0, l: 0 }, ven: { h: 0, m: 0, l: 0 },
+    stale: { fresh: 0, mid: 0, stale: 0 },
+    taxMap: new Map(),
+    perAddon: [] };
+  const repMs = parseD(out.date || todayISO()).getTime();
+
+  for (const [name, entries] of Object.entries(report.addons || {})){
+    for (const e of entries){
+      const iss = e.issues || {};
+      const counts = { h: (iss.HIGH || []).length, m: (iss.MEDIUM || []).length, l: (iss.LOW || []).length };
+      const split = { h: [0, 0], m: [0, 0], l: [0, 0] };
+
+      for (const sev of ["HIGH", "MEDIUM", "LOW"]){
+        const slot = sev === "HIGH" ? "h" : sev === "MEDIUM" ? "m" : "l";
+        for (const it of (iss[sev] || [])){
+          split[slot][isVendoredPath(it.subject) ? 1 : 0]++;
+          const key = normIssueKey(it.text || "");
+          if (key){
+            const rec = out.taxMap.get(key);
+            if (rec) rec.count++;
+            else out.taxMap.set(key, { label: (it.text || "").trim().slice(0, 80), count: 1 });
+          }
+        }
+      }
+
+      const st = e.stats || {};
+      const updMs = e.updated ? Date.parse(e.updated) : NaN;
+      const ageDays = Number.isFinite(updMs) ? Math.max(0, Math.round((repMs - updMs) / 864e5)) : Infinity;
+      const bucket = ageDays < 90 ? "fresh" : ageDays < 365 ? "mid" : "stale";
+      out.stale[bucket]++;
+
+      const row = {
+        id: name + "@" + (e.git_ref || ""),
+        name, ref: e.git_ref || "", repo: e.git_repo || "",
+        h: counts.h, m: counts.m, l: counts.l,
+        fh: split.h[0], fm: split.m[0], fl: split.l[0],
+        vh: split.h[1], vm: split.m[1], vl: split.l[1],
+        w: weighted(counts.h, counts.m, counts.l),
+        qi: Math.max(0, 100 - K_LOG * Math.log1p(weighted(counts.h, counts.m, counts.l))),
+        ageDays,
+        reqs: e.requirements || [],
+        files: e.files || 0,
+        stars: st.stargazers || 0, forks: st.total_forks || st.direct_forks || 0,
+        openIssues: st.open_issues || 0,
+        dl365: st.downloads_365d || 0, dl30: st.downloads_30d || 0
+      };
+      out.perAddon.push(row);
+      out.addons++; out.h += counts.h; out.m += counts.m; out.l += counts.l; out.files += row.files;
+      out.fp.h += row.fh; out.fp.m += row.fm; out.fp.l += row.fl;
+      out.ven.h += row.vh; out.ven.m += row.vm; out.ven.l += row.vl;
+      out.stars += row.stars; out.forks += row.forks; out.openIssues += row.openIssues;
+      out.downloads365 += row.dl365; out.downloads30 += row.dl30;
+    }
+  }
+  out.total = out.h + out.m + out.l;
+  out.wtotal = weighted(out.h, out.m, out.l);
+  out.taxonomy = [...out.taxMap.entries()]
+    .map(([key, v]) => ({ key, label: v.label, count: v.count }))
+    .sort((a, b) => b.count - a.count).slice(0, TAXONOMY_TOP);
+  if (!out.date) out.date = report.date;
+  return out;
+}
+
+/* ─── DERIVED METRICS ────────────────────────────────────────────────── */
+
+function qiBandShares(s){
+  const counts = new Array(QI_BANDS.length).fill(0);
+  for (const r of s.perAddon){
+    let idx = QI_BANDS.findIndex(b => r.qi <= b.max);
+    if (idx < 0) idx = QI_BANDS.length - 1;
+    counts[idx]++;
+  }
+  const tot = s.addons || 1;
+  return counts.map(c => c / tot * 100);
+}
+
+function paretoRows(s){
+  const sorted = s.perAddon.filter(r => r.w > 0).sort((a, b) => b.w - a.w);
+  let cum = 0;
+  const withCum = sorted.map(r => { cum += r.w; return { name: r.name, ref: r.ref, repo: r.repo, w: r.w, cumShare: cum / Math.max(1, s.wtotal) * 100 }; });
+  const n80 = withCum.findIndex(r => r.cumShare >= 80) + 1;
+  return { rows: withCum.slice(0, TAXONOMY_TOP), total: withCum.length, n80: n80 || withCum.length };
+}
+
+function topIssueTypes(pts, n){
+  return pts[pts.length - 1].taxonomy.slice(0, n);
+}
+
+function issueTypeTrends(pts, types){
+  return types.map(t => ({
+    label: t.label,
+    values: pts.map(p => {
+      const hit = p.taxMap.get(t.key);
+      return hit ? hit.count : 0;
+    })
+  }));
+}
+
+function lifecycleEvents(pts){
+  const events = [];
+  for (let i = 1; i < pts.length; i++){
+    const prev = new Set(pts[i - 1].perAddon.map(r => r.id));
+    const curr = new Set(pts[i].perAddon.map(r => r.id));
+    const added = [...curr].filter(id => !prev.has(id));
+    const removed = [...prev].filter(id => !curr.has(id));
+    if (added.length || removed.length)
+      events.push({ date: pts[i].date, added, removed });
+  }
+  return events;
+}
+
+function nameOfId(pts, id){
+  const last = pts[pts.length - 1];
+  const hit = last.perAddon.find(r => r.id === id);
+  if (hit) return hit.name;
+  for (let i = pts.length - 2; i >= 0; i--){
+    const h = pts[i].perAddon.find(r => r.id === id);
+    if (h) return h.name;
+  }
+  return id;
+}
+
+function depsAt(s){
+  const counts = new Map();
+  for (const row of s.perAddon)
+    for (const req of row.reqs){
+      const label = String(req).trim();
+      if (!label) continue;
+      counts.set(label, (counts.get(label) || 0) + 1);
+    }
+  return [...counts.entries()].map(([label, count]) => ({ label, count })).sort((a, b) => b.count - a.count);
+}
+
+/* ─── DATA LOADING ───────────────────────────────────────────────────── */
+
+function candidateDates(){
+  const list = [];
+  let d = FIRST_DATE;
+  const end = todayISO();
+  while (d <= end){ list.push(d); d = addDays(d, 1); }
+  return list;
+}
+
+/* ─── DATA LOADING (continued) ───────────────────────────────────────── */
+
+async function loadReports(dates){
+  const missing = dates.filter(d => !cache.has(d));
+  if (!missing.length) return;
+  state.loading = true;
+  const wrap = $("#progressWrap"), bar = $("#progressBar"), txt = $("#progressText");
+  wrap.style.visibility = "visible";
+  let done = 0, failedNet = false;
+  const total = missing.length;
+  bar.style.width = "0%";
+  txt.textContent = "Loading reports… 0/" + total;
+  let i = 0;
+  async function worker(){
+    while (i < missing.length){
+      const date = missing[i++];
+      try {
+        const res = await fetch(BASE_URL + "report-" + date + ".json");
+        if (res.ok) cache.set(date, summarize(await res.json()));
+      } catch (err){
+        if (err instanceof TypeError) failedNet = true;
+      }
+      done++;
+      bar.style.width = Math.round(done / total * 100) + "%";
+      txt.textContent = "Loading reports… " + done + "/" + total;
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(6, total) }, worker));
+  txt.textContent = "";
+  wrap.style.visibility = "hidden";
+  state.loading = false;
+  if (failedNet){
+    const banner = $("#errBanner");
+    banner.style.display = "block";
+    banner.innerHTML = location.protocol === "file:"
+      ? "<b>Fetch blocked:</b> this page is running from <code>file://</code>. Serve it over HTTP instead:<br><code>python3 -m http.server</code> in its folder, then open <code>http://localhost:8000/dashboard.html</code>"
+      : "<b>Network error</b> while fetching reports from " + BASE_URL + " — check your connection and reload.";
+  }
+}
+
+function pointsInRange(){
+  return state.available
+    .filter(d => (!state.from || d >= state.from) && (!state.to || d <= state.to))
+    .map(d => cache.get(d))
+    .filter(Boolean)
+    .sort((a, b) => a.date < b.date ? -1 : 1);
+}
+
+/* ─── KPI RENDERING ─────────────────────────────────────────────────── */
+
+function kpiCard(label, value, delta, goodDir, colorVar, isPct){
+  const cls = delta === null || delta === 0 ? "flat" : ((delta > 0) === (goodDir === "up") ? "good" : "bad");
+  const arrow = delta === null || delta === 0 ? "→" : delta > 0 ? "▲" : "▼";
+  const dtxt = delta === null ? "no baseline" : arrow + " " + (isPct ? Math.abs(delta).toFixed(1) + "%" : fmtFull(Math.abs(delta)));
+  return '<div class="card kpi' + '" style="--kc:var(' + colorVar + ')">' +
+    '<div class="k-label">' + label + '</div>' +
+    '<div class="k-value">' + value + '</div>' +
+    '<span class="k-delta ' + cls + '">' + dtxt + '</span></div>';
+}
+
+function pctDelta(a, b){
+  if (a === 0 && b === 0) return 0;
+  if (a === 0) return null;
+  return (b - a) / a * 100;
+}
+
+function renderKpis(container, pts, defs){
+  const first = pts[0], last = pts[pts.length - 1];
+  container.innerHTML = defs.map(d => {
+    const v0 = d.get(first), v1 = d.get(last);
+    let delta;
+    if (d.pct){
+      const p = pctDelta(v0, v1);
+      delta = p === null ? null : p;
+    } else {
+      delta = v1 - v0;
+    }
+    const val = (d.dec != null ? Number(v1).toFixed(d.dec) : (d.compact ? fmtCompact(v1) : fmtFull(v1))) + (d.unit || "");
+    return kpiCard(d.label, val, pts.length > 1 ? delta : null, d.goodDir, d.color, !!d.pct);
+  }).join("");
+}
+
+/* ─── CHART ENGINE (SVG) ─────────────────────────────────────────────── */
+
+let chartCleanup = [];
+function clearCharts(){
+  chartCleanup.forEach(f => f());
+  chartCleanup = [];
+}
+
+function renderChart(boxId, cfg){
+  const box = $(boxId);
+  box.innerHTML = "";
+  const W = Math.max(280, box.clientWidth || 480);
+  const H = cfg.height || 250;
+  const pad = { l: cfg.yAxis === false ? 8 : 46, r: 14, t: 12, b: 26 };
+  const n = cfg.labels.length;
+  const svgNS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNS, "svg");
+  svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+  svg.setAttribute("height", H);
+
+  const iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
+  const x = i => pad.l + (n <= 1 ? iw / 2 : i / (n - 1) * iw);
+  const yMax = cfg.yMax != null ? cfg.yMax : niceMax(Math.max(1, ...cfg.series.flatMap(s => s.values)));
+
+  function niceMax(v){
+    if (!Number.isFinite(v) || v <= 0) return 1;
+    const exp = Math.pow(10, Math.floor(Math.log10(v)));
+    for (const mul of [1, 2, 2.5, 4, 5, 8, 10]){
+      const c = mul * exp;
+      if (c >= v) return mul === 2.5 ? mul * exp * 1.04 : c;
+    }
+    return v * 1.05;
+  }
+  const y = v => pad.t + ih - Math.min(1, Math.max(0, v / yMax)) * ih;
+
+  const mk = tag => document.createElementNS(svgNS, tag);
+  const gridG = mk("g"); svg.appendChild(gridG);
+  const ticks = 4;
+  for (let t = 0; t <= ticks; t++){
+    const vy = yMax * t / ticks;
+    const yy = y(vy);
+    const ln = mk("line");
+    ln.setAttribute("x1", pad.l); ln.setAttribute("x2", W - pad.r);
+    ln.setAttribute("y1", yy); ln.setAttribute("y2", yy);
+    ln.setAttribute("stroke", cssVar("--grid"));
+    ln.setAttribute("stroke-width", "1");
+    gridG.appendChild(ln);
+    if (cfg.yAxis !== false){
+      const tx = mk("text");
+      tx.setAttribute("x", pad.l - 8); tx.setAttribute("y", yy + 3.5);
+      tx.setAttribute("text-anchor", "end");
+      tx.setAttribute("fill", cssVar("--muted")); tx.setAttribute("font-size", "10.5");
+      tx.textContent = cfg.yFmt ? cfg.yFmt(vy) : fmtCompact(vy);
+      gridG.appendChild(tx);
+    }
+  }
+  const lblEvery = Math.max(1, Math.ceil(n / 7));
+  for (let i = 0; i < n; i++){
+    if (i % lblEvery !== 0 && i !== n - 1) continue;
+    const tx = mk("text");
+    tx.setAttribute("x", x(i)); tx.setAttribute("y", H - 8);
+    tx.setAttribute("text-anchor", i === 0 ? "start" : i === n - 1 ? "end" : "middle");
+    tx.setAttribute("fill", cssVar("--muted")); tx.setAttribute("font-size", "10.5");
+    tx.textContent = fmtDay(parseD(cfg.labels[i]));
+    gridG.appendChild(tx);
+  }
+
+  const areaG = mk("g"); svg.appendChild(areaG);
+  const lineG = mk("g"); svg.appendChild(lineG);
+
+  function pathFrom(vals){
+    return vals.map((v, i) => (i ? "L" : "M") + x(i).toFixed(1) + "," + y(v).toFixed(1)).join(" ");
+  }
+
+  if (cfg.stacked){
+    const cum = cfg.series.map(() => new Array(n).fill(0));
+    const totalsArr = new Array(n).fill(0);
+    cfg.series.forEach((s, si) => {
+      for (let i = 0; i < n; i++){
+        cum[si][i] = (si ? cum[si - 1][i] : 0) + s.values[i];
+        totalsArr[i] = cum[si][i];
+      }
+    });
+    for (let si = cfg.series.length - 1; si >= 0; si--){
+      const top = cum[si];
+      const bottom = si ? cum[si - 1] : new Array(n).fill(0);
+      let dPath = pathFrom(top);
+      for (let i = n - 1; i >= 0; i--) dPath += "L" + x(i).toFixed(1) + "," + y(bottom[i]).toFixed(1);
+      dPath += "Z";
+      const ar = mk("path");
+      ar.setAttribute("d", dPath);
+      ar.setAttribute("fill", cfg.series[si].color);
+      ar.setAttribute("fill-opacity", "0.28");
+      ar.setAttribute("stroke", "none");
+      areaG.appendChild(ar);
+    }
+    const tot = mk("path");
+    tot.setAttribute("d", pathFrom(totalsArr));
+    tot.setAttribute("fill", "none");
+    tot.setAttribute("stroke", cssVar("--text"));
+    tot.setAttribute("stroke-opacity", "0.45");
+    tot.setAttribute("stroke-width", "1.4");
+    lineG.appendChild(tot);
+    cfg._totals = totalsArr;
+  } else {
+    cfg.series.forEach(s => {
+      const ln = mk("path");
+      ln.setAttribute("d", pathFrom(s.values));
+      ln.setAttribute("fill", "none");
+      ln.setAttribute("stroke", s.color);
+      ln.setAttribute("stroke-width", String(s.width || (cfg.thin ? 1.8 : 2.4)));
+      ln.setAttribute("stroke-linejoin", "round");
+      ln.setAttribute("stroke-linecap", "round");
+      if (s.dash) ln.setAttribute("stroke-dasharray", s.dash);
+      lineG.appendChild(ln);
+      if (cfg.area){
+        let dPath = pathFrom(s.values);
+        dPath += "L" + x(n - 1).toFixed(1) + "," + (pad.t + ih).toFixed(1) + "L" + x(0).toFixed(1) + "," + (pad.t + ih).toFixed(1) + "Z";
+        const ar = mk("path");
+        ar.setAttribute("d", dPath);
+        ar.setAttribute("fill", s.color);
+        ar.setAttribute("fill-opacity", "0.12");
+        areaG.appendChild(ar);
+      }
+    });
+  }
+
+  const cross = mk("line");
+  cross.setAttribute("y1", pad.t); cross.setAttribute("y2", pad.t + ih);
+  cross.setAttribute("stroke", cssVar("--border2"));
+  cross.setAttribute("stroke-width", "1");
+  cross.setAttribute("visibility", "hidden");
+  svg.appendChild(cross);
+  const dots = cfg.series.map(s => {
+    const c = mk("circle");
+    c.setAttribute("r", cfg.stacked ? 0 : 3.5);
+    c.setAttribute("fill", s.color);
+    c.setAttribute("stroke", cssVar("--panel"));
+    c.setAttribute("stroke-width", "1.5");
+    c.setAttribute("visibility", "hidden");
+    svg.appendChild(c);
+    return c;
+  });
+
+  const tip = document.createElement("div");
+  tip.className = "tooltip";
+  box.appendChild(tip);
+
+  function onMove(ev){
+    const rect = svg.getBoundingClientRect();
+    const scale = W / rect.width;
+    const mx = (ev.clientX - rect.left) * scale;
+    let idx = Math.round((mx - pad.l) / (iw || 1) * (n - 1));
+    idx = Math.max(0, Math.min(n - 1, idx));
+    cross.setAttribute("x1", x(idx)); cross.setAttribute("x2", x(idx));
+    cross.setAttribute("visibility", "visible");
+    dots.forEach((c, si) => {
+      c.setAttribute("cx", x(idx));
+      c.setAttribute("cy", y(cfg.series[si].values[idx]));
+      c.setAttribute("visibility", "visible");
+    });
+    let html = '<div class="t-date">' + fmtDay(parseD(cfg.labels[idx])) + ", " + parseD(cfg.labels[idx]).getUTCFullYear() + "</div>";
+    const rows = cfg.series.map((s, si) => ({ label: s.tipLabel || s.label, color: s.color, v: s.values[idx] }));
+    rows.forEach(r => {
+      html += '<div class="t-row"><i style="width:9px;height:9px;border-radius:50%;background:' + r.color + ';display:inline-block"></i>' +
+        r.label + "<b>" + (cfg.tipFmt ? cfg.tipFmt(r.v) : fmtFull(r.v)) + "</b></div>";
+    });
+    if (cfg.stacked){
+      html += '<div class="t-row" style="border-top:1px solid var(--border);margin-top:3px;padding-top:4px">Total<b>' + fmtFull(cfg._totals[idx]) + "</b></div>";
+    }
+    tip.innerHTML = html;
+    tip.style.opacity = "1";
+    const bw = tip.offsetWidth, bh = tip.offsetHeight;
+    let px = x(idx) / scale + 14;
+    if (px + bw > rect.width - 4) px = x(idx) / scale - bw - 14;
+    tip.style.left = px + "px";
+    tip.style.top = Math.max(4, Math.min(rect.height - bh - 4, (pad.t + ih / 2) / scale - bh / 2)) + "px";
+  }
+  function onLeave(){
+    tip.style.opacity = "0";
+    cross.setAttribute("visibility", "hidden");
+    dots.forEach(c => c.setAttribute("visibility", "hidden"));
+  }
+  svg.addEventListener("mousemove", onMove);
+  svg.addEventListener("mouseleave", onLeave);
+  box.appendChild(svg);
+  chartCleanup.push(() => {
+    svg.removeEventListener("mousemove", onMove);
+    svg.removeEventListener("mouseleave", onLeave);
+  });
+}
+
+/* ─── SHARED CHART HELPERS ───────────────────────────────────────────── */
+
+/* ─── SHARED CHART HELPERS ───────────────────────────────────────────── */
+
+function legendHTML(items){
+  return items.map(i => "<span><i style='background:" + i.color + "'></i>" + i.label + "</span>").join("");
+}
+
+function renderBars(boxId, items, opts){
+  const box = $(boxId);
+  const max = Math.max(1, ...items.map(i => i.value));
+  box.innerHTML = items.map(i => {
+    const pct = Math.max(2, i.value / max * 100);
+    const color = opts && opts.colorFn ? opts.colorFn(i) : cssVar("--accent");
+    const tip = (opts && opts.tipFn ? opts.tipFn(i) : String(i.value)).replace(/"/g, "&quot;");
+    return '<div class="bar-row" title="' + tip + '">' +
+      '<span class="bl">' + i.label + "</span>" +
+      '<span class="bar-track"><span class="bar-fill" style="width:' + pct.toFixed(1) + "%;background:" + color + '"></span></span>' +
+      '<span class="bar-val">' + (opts && opts.valFmt ? opts.valFmt(i.value) : fmtFull(i.value)) + "</span></div>";
+  }).join("");
+}
+
+/* ─── MOVERS (IMPROVEMENTS TABLE) ────────────────────────────────────── */
+
+function buildMoverRows(pts){
+  if (pts.length < 2) return [];
+  const first = pts[0], last = pts[pts.length - 1];
+  const mapA = new Map(first.perAddon.map(r => [r.id, r]));
+  const mapB = new Map(last.perAddon.map(r => [r.id, r]));
+  const ids = new Set([...mapA.keys(), ...mapB.keys()]);
+  const rows = [];
+  for (const id of ids){
+    const a = mapA.get(id), b = mapB.get(id);
+    const name = (a || b).name, ref = (a || b).ref, repo = (a || b).repo;
+    const dh = (b ? b.h : 0) - (a ? a.h : 0);
+    const dm = (b ? b.m : 0) - (a ? a.m : 0);
+    const dl = (b ? b.l : 0) - (a ? a.l : 0);
+    const wdelta = (b ? b.w : 0) - (a ? a.w : 0);
+    rows.push({ id, name, ref, repo, dh, dm, dl, wdelta,
+      qi0: a ? a.qi : null, qi1: b ? b.qi : null,
+      isNew: !a, isGone: !b,
+      unchanged: !!a && !!b && dh === 0 && dm === 0 && dl === 0 });
+  }
+  return rows;
+}
+
+function renderMovers(rows){
+  const chips = $("#improveChips");
+  const fixed = rows.reduce((s, r) => s + Math.max(0, -r.wdelta), 0);
+  const introduced = rows.reduce((s, r) => s + Math.max(0, r.wdelta), 0);
+  const net = introduced - fixed;
+  chips.innerHTML =
+    '<span class="chip fixed">Fixed <b>−' + fmtDelta(fixed) + '</b> weighted</span>' +
+    '<span class="chip introduced">Introduced <b>+' + fmtDelta(introduced) + '</b> weighted</span>' +
+    '<span class="chip net">Net <b>' + (net > 0 ? "+" : "") + fmtDelta(net) + '</b></span>';
+
+  const tbody = $("#moversTable tbody");
+  let view = rows.slice();
+  if (state.moverFilter === "improved") view = view.filter(r => r.wdelta < 0);
+  if (state.moverFilter === "regressed") view = view.filter(r => r.wdelta > 0);
+  const k = state.sortKey, dir = state.sortDir;
+  view.sort((x, y) => {
+    const xv = x[k] == null ? -1e9 : x[k], yv = y[k] == null ? -1e9 : y[k];
+    if (typeof xv === "string") return dir * xv.localeCompare(yv);
+    return dir * (xv - yv);
+  });
+  document.querySelectorAll("#moversTable th.sortable").forEach(th =>
+    th.classList.toggle("sorted", th.dataset.k === k));
+
+  const unchangedCount = view.filter(r => r.unchanged).length;
+  if (!state.showUnchanged) view = view.filter(r => !r.unchanged);
+
+  if (!view.length && !unchangedCount){
+    tbody.innerHTML = '<tr><td colspan="7" class="empty">No data for this filter/range</td></tr>';
+    return;
+  }
+  tbody.innerHTML = view.map(r => {
+    const repoLink = r.repo ? '<a href="' + r.repo + '" target="_blank" rel="noopener">' + r.name + "</a>" : r.name;
+    const refTag = r.isNew ? '<span class="ref" style="color:var(--good)">new</span>'
+      : r.isGone ? '<span class="ref" style="color:var(--bad)">removed</span>'
+      : '<span class="ref">' + r.ref + "</span>";
+    const cell = v => v === 0 ? '<span class="d-zero">0</span>' :
+      v < 0 ? '<span class="d-neg">' + v + "</span>" : '<span class="d-pos">+' + v + "</span>";
+    const wcell = r.wdelta === 0 ? '<span class="d-zero">±0</span>' :
+      r.wdelta < 0 ? '<span class="d-neg">' + fmtDelta(r.wdelta) + "</span>" : '<span class="d-pos">+' + fmtDelta(r.wdelta) + "</span>";
+    const qi = q => q == null ? '<span class="d-zero">—</span>' : q.toFixed(0);
+    return "<tr><td class='addon-cell'>" + repoLink + refTag + "</td>" +
+      "<td>" + cell(r.dh) + "</td><td>" + cell(r.dm) + "</td><td>" + cell(r.dl) + "</td>" +
+      "<td>" + wcell + "</td><td>" + qi(r.qi0) + "</td><td>" + qi(r.qi1) + "</td></tr>";
+  }).join("") + unchangedToggleRow(unchangedCount);
+}
+
+function unchangedToggleRow(n){
+  if (!n) return "";
+  const label = (state.showUnchanged ? "Hide " : "Show ") + n +
+    " addon" + (n === 1 ? "" : "s") + " with no changes";
+  return '<tr class="unchanged-toggle"><td colspan="7">' +
+    (state.showUnchanged ? "▾ " : "▸ ") + label + "</td></tr>";
+}
+
+/* ─── SECTION RENDERERS ──────────────────────────────────────────────── */
+
+function mini(label, sub, getVal, colorVar){
+  return { label, sub, getVal, colorVar };
+}
+
+/* ─── QUALITY SECTION RENDERERS ──────────────────────────────────────── */
+
+const SCOPE_SUBS = {
+  all: "Open issue counts per severity across all addons (weighted total overlaid)",
+  fp: "Counting only first-party files — vendored bundle findings excluded",
+  ven: "Counting only vendored bundle files (vendor/, libs/, site-packages/ …)"
+};
+
+function scopeSource(p){
+  return state.issueScope === "fp" ? p.fp : state.issueScope === "ven" ? p.ven : p;
+}
+
+function renderSevChart(pts, labels){
+  $("#sevSub").textContent = SCOPE_SUBS[state.issueScope];
+  const sevColors = SEV.map(s => cssVar(s.colorVar));
+  $("#sevLegend").innerHTML = legendHTML([
+    ...SEV.map((s, i) => ({ label: s.label, color: sevColors[i] })),
+    { label: "Total", color: cssVar("--text") }
+  ]);
+  renderChart("#chartSev", {
+    labels,
+    height: 250,
+    stacked: true,
+    series: SEV.map((s, i) => ({
+      label: s.label,
+      values: pts.map(p => scopeSource(p)[s.field]),
+      color: sevColors[i]
+    }))
+  });
+}
+
+function renderQiChart(pts, labels){
+  const sortedQi = pts.map(p => p.perAddon.map(r => r.qi).sort((a, b) => a - b));
+  const mainColor = cssVar("--good");
+  const bandColor = cssVar("--muted");
+  $("#qiLegend").innerHTML = legendHTML([
+    { label: "QI (" + (state.qiMode === "weighted" ? "severity-weighted" : "mean") + ")", color: mainColor },
+    { label: "P10 · P90", color: bandColor }
+  ]);
+  renderChart("#chartQi", {
+    labels,
+    height: 250,
+    yMax: 100,
+    series: [
+      { label: "QI P10", values: sortedQi.map(v => Math.round(percentile(v, 10) * 10) / 10),
+        color: bandColor, width: 1.2, dash: "3 5" },
+      { label: "QI P90", values: sortedQi.map(v => Math.round(percentile(v, 90) * 10) / 10),
+        color: bandColor, width: 1.2, dash: "3 5" },
+      { label: "QI", values: pts.map(p => Math.round(qiAggregate(p) * 10) / 10),
+        color: mainColor, width: 2.6 }
+    ],
+    tipFmt: v => v.toFixed(1)
+  });
+}
+
+function renderDistribution(pts, labels){
+  const colors = QI_BANDS.map(b => cssVar(b.colorVar));
+  $("#distLegend").innerHTML = legendHTML(QI_BANDS.map((b, i) => ({ label: b.label, color: colors[i] })));
+  renderChart("#chartDist", {
+    labels,
+    height: 250,
+    stacked: true,
+    yMax: 100,
+    yFmt: v => Math.round(v) + "%",
+    tipFmt: v => v.toFixed(1) + "%",
+    series: QI_BANDS.map((b, i) => ({
+      label: b.label,
+      values: pts.map(p => qiBandShares(p)[i]),
+      color: colors[i]
+    }))
+  });
+}
+
+function renderPareto(pts){
+  const { rows, total, n80 } = paretoRows(pts[pts.length - 1]);
+  $("#paretoCap").textContent = total
+    ? n80 + " of " + total + " addons with issues cover 80% of the weighted load"
+    : "No issues found at the end of this range";
+  renderBars("#paretoBox", rows.map(r => ({ label: r.name, value: r.w, cumShare: r.cumShare })), {
+    colorFn: () => cssVar("--high"),
+    tipFn: i => i.cumShare.toFixed(1) + "% cumulative",
+    valFmt: fmtDelta
+  });
+}
+
+function shortLabel(text){
+  return text.length > 34 ? text.slice(0, 33) + "…" : text;
+}
+
+function renderTaxonomy(pts, labels){
+  const top = topIssueTypes(pts, TAXONOMY_TOP);
+  if (!top.length){
+    $("#taxBars").innerHTML = '<div class="empty">No issues in this range</div>';
+    $("#taxTrend").innerHTML = '<div class="empty">—</div>';
+    return;
+  }
+  renderBars("#taxBars", top.map(t => ({ label: t.label, value: t.count })), {
+    colorFn: () => cssVar("--accent"),
+    tipFn: i => i.value + " occurrences"
+  });
+  const trends = issueTypeTrends(pts, top.slice(0, 5));
+  const shorts = trends.map(t => shortLabel(t.label));
+  $("#taxTrendLegend").innerHTML = legendHTML(shorts.map((lb, i) =>
+    ({ label: lb, color: cssVar(TREND_PALETTE[i]) })));
+  renderChart("#taxTrend", {
+    labels,
+    height: 250,
+    thin: true,
+    series: trends.map((t, i) => ({
+      label: shorts[i],
+      tipLabel: shorts[i],
+      values: t.values,
+      color: cssVar(TREND_PALETTE[i])
+    }))
+  });
+}
+
+/* ─── HEALTH SECTION RENDERERS ───────────────────────────────────────── */
+
+function renderStaleness(pts, labels){
+  const keys = ["fresh", "mid", "stale"];
+  const colors = STALE_BUCKETS.map(b => cssVar(b.colorVar));
+  $("#staleLegend").innerHTML = legendHTML(STALE_BUCKETS.map((b, i) => ({ label: b.label, color: colors[i] })));
+  renderChart("#chartStale", {
+    labels,
+    height: 250,
+    stacked: true,
+    yMax: 100,
+    yFmt: v => Math.round(v) + "%",
+    tipFmt: v => v.toFixed(1) + "%",
+    series: STALE_BUCKETS.map((b, i) => ({
+      label: b.label,
+      values: pts.map(p => p.addons ? p.stale[keys[i]] / p.addons * 100 : 0),
+      color: colors[i]
+    }))
+  });
+}
+
+const DEP_KIND_COLORS = [
+  { prefix: "Internal:", colorVar: "--accent" },
+  { prefix: "Pip:", colorVar: "--stat" },
+  { prefix: "Compat:", colorVar: "--med" }
+];
+
+function renderDeps(pts){
+  const deps = depsAt(pts[pts.length - 1]).slice(0, 10);
+  if (!deps.length){
+    $("#depBars").innerHTML = '<div class="empty">No requirements data</div>';
+    return;
+  }
+  renderBars("#depBars", deps.map(d => ({ label: d.label, value: d.count })), {
+    colorFn: i => {
+      const kind = DEP_KIND_COLORS.find(k => i.label.startsWith(k.prefix));
+      return cssVar(kind ? kind.colorVar : "--low");
+    },
+    tipFn: i => i.value + " addons require this"
+  });
+}
+
+function renderLifecycle(pts){
+  const events = lifecycleEvents(pts);
+  if (!events.length){
+    $("#lifecycleList").innerHTML =
+      '<div class="empty">No addon entered or left the ecosystem in this range</div>';
+    return;
+  }
+  const fmtNames = ids => {
+    const names = ids.map(id => nameOfId(pts, id));
+    return names.length <= 6
+      ? names.join(", ")
+      : names.slice(0, 6).join(", ") + " +" + (names.length - 6) + " more";
+  };
+  $("#lifecycleList").innerHTML = events.slice(-40).map(ev =>
+    '<div class="event-row"><span class="ev-date">' + fmtDay(parseD(ev.date)) + "</span>" +
+    (ev.added.length
+      ? '<span style="color:var(--good);font-weight:700">+' + ev.added.length + " added</span>" +
+        '<span class="ev-names">' + fmtNames(ev.added) + "</span>"
+      : "") +
+    (ev.removed.length
+      ? '<span style="color:var(--bad);font-weight:700">−' + ev.removed.length + " removed</span>" +
+        '<span class="ev-names">' + fmtNames(ev.removed) + "</span>"
+      : "") +
+    "</div>").join("");
+}
+
+function resetPanels(){
+  ["#qualityKpis", "#statsKpis", "#healthKpis"].forEach(sel => $(sel).innerHTML = "");
+  ["#chartSev", "#chartQi", "#chartDist", "#paretoBox", "#taxBars", "#taxTrend",
+   "#chartStale", "#depBars", "#lifecycleList"].forEach(sel =>
+    $(sel).innerHTML = '<div class="empty">No reports loaded for this range yet</div>');
+  ["#sevLegend", "#qiLegend", "#distLegend", "#taxTrendLegend", "#staleLegend",
+   "#improveChips", "#paretoCap"].forEach(sel => $(sel).innerHTML = "");
+  $("#rangeNote").textContent = "";
+}
+
+/* ─── ORCHESTRATION ──────────────────────────────────────────────────── */
+
+function render(){
+  const pts = pointsInRange();
+  clearCharts();
+  if (!pts.length){
+    resetPanels();
+    return;
+  }
+  const labels = pts.map(p => p.date);
+
+  renderKpis($("#qualityKpis"), pts, [
+    { label: "Total Issues", get: p => p.total, goodDir: "down", color: "--accent", compact: true },
+    { label: "High", get: p => p.h, goodDir: "down", color: "--high" },
+    { label: "Medium", get: p => p.m, goodDir: "down", color: "--med" },
+    { label: "Low", get: p => p.l, goodDir: "down", color: "--low" },
+    { label: "Avg Quality Index", get: p => qiAggregate(p), goodDir: "up", color: "--good", dec: 1 },
+    { label: "Median QI", get: p => percentile(p.perAddon.map(r => r.qi).sort((a, b) => a - b), 50), goodDir: "up", color: "--accent", dec: 1 },
+    { label: "High-Free Addons", get: p => p.addons ? p.perAddon.filter(r => r.h === 0).length / p.addons * 100 : 0, goodDir: "up", color: "--stat", dec: 1, unit: "%" }
+  ]);
+
+  renderKpis($("#statsKpis"), pts, [
+    { label: "Addons Tracked", get: p => p.addons, goodDir: "up", color: "--stat" },
+    { label: "Files Analyzed", get: p => p.files, goodDir: "up", color: "--stat", compact: true },
+    { label: "Downloads (365d)", get: p => p.downloads365, goodDir: "up", color: "--stat", compact: true },
+    { label: "Stars", get: p => p.stars, goodDir: "up", color: "--stat", compact: true }
+  ]);
+
+  renderKpis($("#healthKpis"), pts, [
+    { label: "Fresh <3mo", get: p => p.stale.fresh, goodDir: "up", color: "--good" },
+    { label: "Aging 3–12mo", get: p => p.stale.mid, goodDir: "down", color: "--med" },
+    { label: "Stale >1yr", get: p => p.stale.stale, goodDir: "down", color: "--high" },
+    { label: "Stale Share", get: p => p.addons ? p.stale.stale / p.addons * 100 : 0, goodDir: "down", color: "--bad", dec: 1, unit: "%" }
+  ]);
+
+  $("#rangeNote").textContent = pts.length + " report" + (pts.length > 1 ? "s" : "") +
+    (pts.length > 1 ? " · " + pts[0].date + " → " + pts[pts.length - 1].date : "");
+
+  renderSevChart(pts, labels);
+  renderQiChart(pts, labels);
+  renderDistribution(pts, labels);
+  renderPareto(pts);
+  renderTaxonomy(pts, labels);
+  renderMovers(buildMoverRows(pts));
+
+  const minis = [
+    mini("Addons tracked", "entries per report", p => p.addons, "--stat"),
+    mini("Files analyzed", "python files scanned", p => p.files, "--stat"),
+    mini("Issue density", "weighted issues per 1k files", p => p.files ? Math.round(p.wtotal / p.files * 10000) / 10 : 0, "--stat"),
+    mini("Downloads (365d)", "sum of rolling windows", p => p.downloads365, "--stat"),
+    mini("GitHub stars", "sum across repos", p => p.stars, "--stat")
+  ];
+  $("#statMinis").innerHTML = minis.map((m, i) =>
+    '<div class="card chart-card"><h3>' + m.label + '</h3><p class="sub">' + m.sub + '</p>' +
+    '<div class="chart-box" id="mini-' + i + '"></div></div>').join("");
+  minis.forEach((m, i) => renderChart("#mini-" + i, {
+    labels,
+    height: 130,
+    thin: true,
+    yAxis: false,
+    area: true,
+    series: [{ label: m.label, values: pts.map(m.getVal), color: cssVar(m.colorVar) }]
+  }));
+
+  renderStaleness(pts, labels);
+  renderDeps(pts);
+  renderLifecycle(pts);
+}
+
+/* ─── RANGE / URL STATE ─────────────────────────────────────────────── */
+
+function syncUrl(){
+  const q = new URLSearchParams();
+  if (state.from && state.from !== FIRST_DATE) q.set("from", state.from);
+  if (state.to && state.to !== todayISO()) q.set("to", state.to);
+  if (state.qiMode !== "mean") q.set("qi", state.qiMode);
+  if (state.issueScope !== "all") q.set("scope", state.issueScope);
+  if (state.showUnchanged) q.set("unchanged", "1");
+  const qs = q.toString();
+  history.replaceState(null, "", location.pathname + (qs ? "?" + qs : ""));
+}
+
+async function applyRange(from, to){
+  state.from = from;
+  state.to = to;
+  $("#fromDate").value = from || "";
+  $("#toDate").value = to || "";
+  const wanted = state.available.filter(d => (!from || d >= from) && (!to || d <= to));
+  await loadReports(wanted.length ? wanted : state.available.slice(-1));
+  syncUrl();
+  render();
+}
+
+function setPresets(){
+  const last = state.available[state.available.length - 1];
+  const presets = [
+    { label: "7D", days: 7 }, { label: "14D", days: 14 }, { label: "30D", days: 30 },
+    { label: "60D", days: 60 }, { label: "All", days: null }
+  ];
+  const el = $("#presets");
+  el.innerHTML = presets.map(p => '<button data-days="' + (p.days == null ? "all" : p.days) + '">' + p.label + "</button>").join("");
+  el.addEventListener("click", ev => {
+    const btn = ev.target.closest("button");
+    if (!btn) return;
+    el.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    const days = btn.dataset.days;
+    if (days === "all") applyRange(state.available[0], last);
+    else applyRange(addDays(last, -parseInt(days, 10) + 1), last);
+  });
+}
+
+async function boot(){
+  window.addEventListener("error", ev => {
+    const banner = $("#errBanner");
+    banner.style.display = "block";
+    banner.textContent = "Error: " + (ev.message || ev.type);
+  });
+  if (location.protocol === "file:"){
+    const banner = $("#errBanner");
+    banner.style.display = "block";
+    banner.innerHTML = "<b>Cannot load reports from <code>file://</code>.</b> Serve this folder over HTTP:<br><code>python3 -m http.server</code> &nbsp;→&nbsp; open <code>http://localhost:8000/dashboard.html</code>";
+    return;
+  }
+  const themeBtn = $("#themeBtn");
+  try {
+    const saved = localStorage.getItem("fq-theme");
+    if (saved) document.documentElement.dataset.theme = saved;
+  } catch (e) {}
+  themeBtn.addEventListener("click", () => {
+    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem("fq-theme", next); } catch (e) {}
+    render();
+  });
+
+  state.available = candidateDates();
+  $("#fromDate").min = FIRST_DATE;
+  $("#toDate").min = FIRST_DATE;
+  $("#fromDate").max = state.available[state.available.length - 1];
+  $("#toDate").max = state.available[state.available.length - 1];
+  setPresets();
+
+  $("#fromDate").addEventListener("change", () => applyRange($("#fromDate").value || null, $("#toDate").value || null));
+  $("#toDate").addEventListener("change", () => applyRange($("#fromDate").value || null, $("#toDate").value || null));
+
+  document.querySelectorAll("#moversTable th.sortable").forEach(th => {
+    th.addEventListener("click", () => {
+      const k = th.dataset.k;
+      if (state.sortKey === k) state.sortDir *= -1;
+      else { state.sortKey = k; state.sortDir = k === "wdelta" ? 1 : -1; }
+      render();
+    });
+  });
+  $("#moverFilters").addEventListener("click", ev => {
+    const btn = ev.target.closest("button");
+    if (!btn) return;
+    document.querySelectorAll("#moverFilters button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    state.moverFilter = btn.dataset.f;
+    render();
+  });
+  $("#moversTable tbody").addEventListener("click", ev => {
+    if (!ev.target.closest(".unchanged-toggle")) return;
+    state.showUnchanged = !state.showUnchanged;
+    syncUrl();
+    render();
+  });
+  $("#qiMode").value = state.qiMode;
+  $("#issueScope").value = state.issueScope;
+  $("#qiMode").addEventListener("change", ev => {
+    state.qiMode = ev.target.value;
+    syncUrl();
+    render();
+  });
+  $("#issueScope").addEventListener("change", ev => {
+    state.issueScope = ev.target.value;
+    syncUrl();
+    render();
+  });
+
+  let rt;
+  window.addEventListener("resize", () => {
+    clearTimeout(rt);
+    rt = setTimeout(render, 160);
+  });
+
+  const qsFrom = qsParams.get("from"), qsTo = qsParams.get("to");
+  const isISO = s => /^\d{4}-\d{2}-\d{2}$/.test(s || "");
+  if (isISO(qsFrom) || isISO(qsTo)){
+    await applyRange(isISO(qsFrom) ? qsFrom : FIRST_DATE,
+      isISO(qsTo) ? qsTo : state.available[state.available.length - 1]);
+  } else {
+    $("#presets").querySelector('[data-days="all"]').classList.add("active");
+    await applyRange(FIRST_DATE, state.available[state.available.length - 1]);
+  }
+}
+
+if (typeof document !== "undefined" && document.getElementById("themeBtn")){
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+}
+</script>
+</body>
+</html>
